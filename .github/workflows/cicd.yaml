@@ -1,0 +1,21 @@
+name: Github Actions - Maven CI/CD
+on:
+  push:
+    branches:
+      - test*
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: checkout repository code
+      uses: actions/checkout@v4
+
+    - name: bump version
+      id: bump
+      uses: nnichols/maven-version-bump-action@v3
+      with:
+        type: patch
+        pom-path: ./myapp
+
