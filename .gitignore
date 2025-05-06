@@ -21,3 +21,8 @@ target/
 /.maven
 /.repository
 .flattened-pom.xml
+
+
+
+# Helm #
+secrets.yaml
