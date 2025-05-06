@@ -2,8 +2,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Values.app.name }}
+  namespace: {{ .Values.app.namespace }}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.app.replicaCount }}
   selector:
     matchLabels:
       app: {{ .Values.app.selectorLabel }}
@@ -15,6 +16,7 @@ spec:
       containers:
       - name: {{ .Values.app.name }}
         image: "{{ .Values.app.image.name }}:{{ .Values.app.image.tag }}"
+        imagePullPolicy: {{ .Values.app.image.imagePullPolicy }}
       imagePullSecrets:
       - name: docker-cred
       nodeSelector:

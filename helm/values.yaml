@@ -1,9 +1,12 @@
 app:
   name: helloworld
+  namespace: java
+  replicaCount: 2
   selectorLabel: java-app
   image:
     name: gingerous/helloapp
     tag: "1.0.3"
+    imagePullPolicy: Always
   nodeSelector:
     environment: java
   tolerations:
@@ -11,4 +14,23 @@ app:
     value: "java"
     effect: "NoExecute"
 
-replicaCount: 2
+
+ingress:
+  classname: nginx
+  app:
+    name: java-ingress
+    host: java.hello.click
+
+
+services:
+  app:
+    name: java-app-service
+    type: ClusterIP
+    protocol: TCP
+    port: 80
+    targetPort: 80
+
+
+
+
+
