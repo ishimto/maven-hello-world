@@ -4,7 +4,7 @@ on:
     branches:
       - test*
 env:
-  DOCKER_IMAGE: helloapp
+  DOCKER_IMAGE: ${{ secrets.DOCKER_USERNAME }}/helloapp
 
 jobs:
   ci:
@@ -32,11 +32,11 @@ jobs:
         path: myapp/target/*.jar
 
     - name: Build image
-      run:  docker build -t ${{ secrets.DOCKER_USERNAME }}/$DOCKER_IMAGE .
+      run:  docker build -t $DOCKER_IMAGE .
     
     - name: Test Image
       run: |
-        output=$(docker run --rm ${{ secrets.DOCKER_USERNAME }}/$DOCKER_IMAGE)
+        output=$(docker run --rm $DOCKER_IMAGE)
 
         if [[ "$output" != "Shoham wants to say Hello World!!!" ]]; then
             echo "the output isn't as expected"
@@ -52,9 +52,9 @@ jobs:
 
     - name: Publish docker image to Docker Hub
       run: |
-        docker tag ${{ secrets.DOCKER_USERNAME }}/$DOCKER_IMAGE ${{ secrets.DOCKER_USERNAME }}/$DOCKER_IMAGE:${{ env.VERSION }}
-        docker push ${{ secrets.DOCKER_USERNAME }}/$DOCKER_IMAGE
-        docker push ${{ secrets.DOCKER_USERNAME }}/$DOCKER_IMAGE:${{ env.VERSION }}
+        docker tag $DOCKER_IMAGE $DOCKER_IMAGE:${{ env.VERSION }}
+        docker push $DOCKER_IMAGE
+        docker push $DOCKER_IMAGE:${{ env.VERSION }}
 
     - name: Update pom.xml with new version
       uses: EndBug/add-and-commit@v9
@@ -76,11 +76,11 @@ jobs:
           password: ${{ secrets.DOCKER_TOKEN }}
 
       - name: Pull latest docker image
-        run: docker pull ${{ secrets.DOCKER_USERNAME }}/$DOCKER_IMAGE
+        run: docker pull $DOCKER_IMAGE
           
       - name: Run & Test
         run: |
-          output=$(docker run --rm ${{ secrets.DOCKER_USERNAME }}/$DOCKER_IMAGE)
+          output=$(docker run --rm $DOCKER_IMAGE)
           
           if [[ "$output" != "Shoham wants to say Hello World!!!" ]]; then
             echo "the output isn't as expected"
