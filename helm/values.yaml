@@ -24,7 +24,6 @@ livenessProbe:
   initialDelaySeconds: 10
   periodSeconds: 5
   failureThreshold: 3
-  successThreshold: 2
 
 
 ingress:

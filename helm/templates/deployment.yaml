@@ -36,7 +36,6 @@ spec:
             initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
             failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
-            successThreshold: {{ .Values.livenessProbe.successThreshold }}
 
       imagePullSecrets:
       - name: docker-cred
