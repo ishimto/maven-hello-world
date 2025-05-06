@@ -1,0 +1,7 @@
+Your application {{ .Release.Name }} is now deployed!
+
+It can be accessed at:
+http://{{ .Values.ingress.app.host }}
+
+To delete this release:
+helm uninstall {{ .Release.Name }}
