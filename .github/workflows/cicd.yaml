@@ -53,3 +53,11 @@ jobs:
         docker tag ${{ secrets.DOCKER_USERNAME }}/helloapp ${{ secrets.DOCKER_USERNAME }}/helloapp:${{ env.VERSION }}
         docker push ${{ secrets.DOCKER_USERNAME }}/helloapp
         docker push ${{ secrets.DOCKER_USERNAME }}/helloapp:${{ env.VERSION }}
+
+    - name: Update pom.xml with new version
+      uses: EndBug/add-and-commit@v9
+      with:
+        author_name: GithubActions
+        author_email: githubactions@ginger.com
+        add: 'myapp/pom.xml'
+        message: ${{ env.VERSION }}
