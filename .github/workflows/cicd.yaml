@@ -30,14 +30,15 @@ jobs:
         path: myapp/target/*.jar
 
     - name: Build image
-      run:  docker build -t ${{ secrets.DOCKER_USERNAME }}/helloapp:${{ env.VERSION }} .
+      run:  docker build -t ${{ secrets.DOCKER_USERNAME }}/helloapp .
     
     - name: Test Image
       run: |
-        output=$(docker run --rm ${{ secrets.DOCKER_USERNAME }}/helloapp:${{ env.VERSION }})
+        output=$(docker run --rm ${{ secrets.DOCKER_USERNAME }}/helloapp)
 
         if [[ "$output" != "Shoham wants to say Hello World!!!" ]]; then
             echo "the output isn't as expected"
+            echo "the output is: $output"
             exit 1
         fi
 
@@ -48,4 +49,7 @@ jobs:
         password: ${{ secrets.DOCKER_TOKEN }}
 
     - name: Publish docker image to Docker Hub
-      run: docker push ${{ secrets.DOCKER_USERNAME }}/helloapp:${{ env.VERSION }}
+      run: |
+        docker tag ${{ secrets.DOCKER_USERNAME }}/helloapp ${{ secrets.DOCKER_USERNAME }}/helloapp:${{ env.VERSION }}
+        docker push ${{ secrets.DOCKER_USERNAME }}/helloapp
+        docker push ${{ secrets.DOCKER_USERNAME }}/helloapp:${{ env.VERSION }}
