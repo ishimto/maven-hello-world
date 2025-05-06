@@ -2,6 +2,9 @@ app:
   name: helloworld
   namespace: java
   replicaCount: 2
+  rollingUpdate:
+    maxSurge: 25%
+    maxUnavailable: 25%
   selectorLabel: java-app
   image:
     name: gingerous/helloapp
@@ -13,6 +16,7 @@ app:
     key: "env"
     value: "java"
     effect: "NoExecute"
+
 
 readinessProbe:
   initialDelaySeconds: 30
@@ -40,8 +44,3 @@ services:
     protocol: TCP
     port: 80
     targetPort: 80
-
-
-
-
-

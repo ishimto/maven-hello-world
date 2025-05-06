@@ -6,6 +6,11 @@ metadata:
 spec:
   replicas: {{ .Values.app.replicaCount }}
   selector:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: {{ .Values.app.rollingUpdate.maxSurge }}
+      maxUnavailable: {{ .Values.app.rollingUpdate.maxUnavailable }}
     matchLabels:
       app: {{ .Values.app.selectorLabel }}
   template:
@@ -14,8 +19,8 @@ spec:
         app: {{ .Values.app.selectorLabel }}
       annotations:
         prometheus.io/scrape: "true"
-        prometheus.io/path: /metrics
-        prometheus.io/port: {{ .Values.services.app.targetPort }}
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: "{{ .Values.services.app.targetPort }}"
     spec:
       containers:
       - name: {{ .Values.app.name }}
