@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.app.name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.app.selectorLabel }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.app.selectorLabel }}
+    spec:
+      containers:
+      - name: {{ .Values.app.name }}
+        image: "{{ .Values.app.image.name }}:{{ .Values.app.image.tag }}"
+      imagePullSecrets:
+      - name: docker-cred
+      nodeSelector:
+        environment: {{ .Values.app.nodeSelector.environment }}
+      tolerations:
+        - key: {{ .Values.app.tolerations.key }}
+          value: {{ .Values.app.tolerations.value }}
+          effect: {{ .Values.app.tolerations.effect }}

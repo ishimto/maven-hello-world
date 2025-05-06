@@ -1,0 +1,4 @@
+apiVersion: v2
+name: helloworld
+description: helm chart as the exercise demand
+version: "1.0.0"
