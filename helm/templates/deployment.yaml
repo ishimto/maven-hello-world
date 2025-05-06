@@ -5,12 +5,12 @@ metadata:
   namespace: {{ .Values.app.namespace }}
 spec:
   replicas: {{ .Values.app.replicaCount }}
-  selector:
   strategy:
     type: RollingUpdate
     rollingUpdate:
       maxSurge: {{ .Values.app.rollingUpdate.maxSurge }}
       maxUnavailable: {{ .Values.app.rollingUpdate.maxUnavailable }}
+  selector:
     matchLabels:
       app: {{ .Values.app.selectorLabel }}
   template:
