@@ -16,5 +16,6 @@ jobs:
       id: bump
       uses: nnichols/maven-version-bump-action@v3
       with:
-        type: '#patch'
         pom-path: './myapp'
+        type: "patch"
+
