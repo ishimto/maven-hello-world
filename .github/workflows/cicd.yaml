@@ -26,5 +26,5 @@ jobs:
     - name: GitHub artifact
       uses: actions/upload-artifact@v4
       with:
-        name: myapp-$env.VERSION
+        name: myapp-${{ env.VERSION }}
         path: myapp/target/*.jar
