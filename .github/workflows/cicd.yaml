@@ -16,4 +16,7 @@ jobs:
       id: bump
       run: |
         mvn -f myapp/pom.xml build-helper:parse-version versions:set -DnewVersion='${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.nextIncrementalVersion}'
-        cat myapp/pom.xml
+        echo "VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
+    
+    - name: test env
+      run: echo $VERSION
