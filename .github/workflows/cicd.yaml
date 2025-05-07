@@ -35,7 +35,7 @@ jobs:
         
         if [[ -z ${STATUS} ]]; then
             echo "success, extract artifact"
-            docker cp ${CONTAINER_NAME}:/myapp-${{ env.VERSION }}.jar .
+            docker cp ${CONTAINER_NAME}:/home/nonroot/myapp-${{ env.VERSION }}.jar .
         else
             echo "container isn't healthy"
             exit 1
