@@ -92,6 +92,7 @@ jobs:
 
     - name: Tag latest as rollback
       run: docker tag ${DOCKER_IMAGE} ${DOCKER_IMAGE}:rollback
+      continue-on-error: true
 
     - name: Pull latest
       run: docker pull ${DOCKER_IMAGE}
