@@ -25,11 +25,13 @@ jobs:
         echo "VERSION=$(mvn -f myapp/pom.xml help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
 
     - name: Build image
-      run:  docker compose up -d
+      run: |
+        docker compose up -d
+        sleep 8
 
     - name: Test Image && Extract artifact
       run: |
-        sleep 8
+        sleep 10
         output=$(docker inspect --format='{{json .State.Health}}' ${CONTAINER_NAME} | jq | grep unhealthy)
 
         if [[ -z ${output} ]]; then
