@@ -13,7 +13,7 @@ env:
 
 
 jobs:
-  ci:
+  stage:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/stage'
     steps:
@@ -119,7 +119,7 @@ jobs:
         fi
 
 
-  cd:
+  production:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master'
     steps:
