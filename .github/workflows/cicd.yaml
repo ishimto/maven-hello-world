@@ -29,9 +29,8 @@ jobs:
 
     - name: Test Image && Extract artifact
       run: |
-        status=$(docker inspect --format='{{json .State.Health}}' ${CONTAINER_NAME} | jq | grep unhealthy)
-        echo "the status is $status"
-        if [[ "$status" -eq 0 ]]; then
+        docker inspect --format='{{json .State.Health}}' ${CONTAINER_NAME} | jq | grep unhealthy
+        if [[ "$?" -eq 0 ]]; then
             echo "container isn't healthy"
             exit 1
         else
