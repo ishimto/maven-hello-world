@@ -27,14 +27,13 @@ jobs:
     - name: Build image
       run: |
         docker compose up -d
-        sleep 8
+        sleep 15
+        echo "STATUS=$(docker inspect --format='{{json .State.Health}}' ${CONTAINER_NAME} | jq | grep unhealthy)" >> $GITHUB_ENV
 
     - name: Test Image && Extract artifact
       run: |
-        sleep 10
-        output=$(docker inspect --format='{{json .State.Health}}' ${CONTAINER_NAME} | jq | grep unhealthy)
-
-        if [[ -z ${output} ]]; then
+        
+        if [[ -z ${STATUS} ]]; then
             echo "success, extract artifact"
             docker cp ${CONTAINER_NAME}:/myapp-${{ env.VERSION }}.jar .
         else
