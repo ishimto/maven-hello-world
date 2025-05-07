@@ -6,9 +6,11 @@ on:
     paths-ignore:
       - "*.md"
 
+
 env:
   DOCKER_IMAGE: ${{ secrets.DOCKER_REPO }}/javahello
   CONTAINER_NAME: javaproject
+
 
 jobs:
   ci:
@@ -78,11 +80,11 @@ jobs:
        HOST: ${{ secrets.EC2_HOST }}
        USER: ${{ secrets.EC2_USER }}
      run: |
-        docker context create ec2 --docker "host=ssh://${USER}@${HOST}"
-        docker context use ec2
-        docker compose up -d
-        sleep 15
-        echo "DEPLOY_STATUS=$(docker inspect --format='{{json .State.Health}}' ${CONTAINER_NAME} | jq | grep unhealthy)" >> $GITHUB_ENV
+       docker context create ec2 --docker "host=ssh://${USER}@${HOST}"
+       docker context use ec2
+       docker compose up -d
+       sleep 15
+       echo "DEPLOY_STATUS=$(docker inspect --format='{{json .State.Health}}' ${CONTAINER_NAME} | jq | grep unhealthy)" >> $GITHUB_ENV
 
 
   cd:
