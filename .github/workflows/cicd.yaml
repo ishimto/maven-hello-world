@@ -67,23 +67,23 @@ jobs:
         add: 'myapp/pom.xml'
         message: ${{ env.VERSION }}
 
-   #- name: Add ec2 SSH key
-   #  env:
-   #    PRIVATE_KEY: ${{ secrets.EC2_DEPLOPY_KEY }}
-   #  run: |
-   #    echo "$PRIVATE_KEY" > ec2.pem && chmod 600 ec2.pem
-   #    ssh-add ec2.pem
+    - name: Add ec2 SSH key
+      env:
+        PRIVATE_KEY: ${{ secrets.EC2_DEPLOPY_KEY }}
+      run: |
+        echo "$PRIVATE_KEY" > ec2.pem && chmod 600 ec2.pem
+        ssh-add ec2.pem
    
-   #- name: Deploy to EC2 using docker context
-   #  env:
-   #    HOST: ${{ secrets.EC2_HOST }}
-   #    USER: ${{ secrets.EC2_USER }}
-   #  run: |
-   #    docker context create ec2 --docker "host=ssh://${USER}@${HOST}"
-   #    docker context use ec2
-   #    docker compose up -d
-   #    sleep 15
-   #    echo "DEPLOY_STATUS=$(docker inspect --format='{{json .State.Health}}' ${CONTAINER_NAME} | jq | grep unhealthy)" >> $GITHUB_ENV
+    - name: Deploy to EC2 using docker context
+      env:
+        HOST: ${{ secrets.EC2_HOST }}
+        USER: ${{ secrets.EC2_USER }}
+      run: |
+        docker context create ec2 --docker "host=ssh://${USER}@${HOST}"
+        docker context use ec2
+        docker compose up -d
+        sleep 15
+        echo "DEPLOY_STATUS=$(docker inspect --format='{{json .State.Health}}' ${CONTAINER_NAME} | jq | grep unhealthy)" >> $GITHUB_ENV
 
 
   cd:
