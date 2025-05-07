@@ -81,6 +81,7 @@ jobs:
           
       - name: Run & Test
         run: |
+          sleep 8
           docker run -dit --name ${CONTAINER_NAME} ${DOCKER_IMAGE}
           output=$(docker logs ${CONTAINER_NAME})
 
