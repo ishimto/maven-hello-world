@@ -12,7 +12,7 @@ env:
 
 
 jobs:
-  ci:
+  cicd:
     runs-on: ubuntu-latest
     
     steps:
@@ -76,7 +76,7 @@ jobs:
       run: |
         ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
     
-    - name: setup docker context
+    - name: Setup docker context
       env:
         HOST: ${{ secrets.EC2_HOST }}
         USER: ${{ secrets.EC2_USER }}
@@ -90,37 +90,28 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_TOKEN }}
 
+    - name: Tag latest as rollback
+      run: docker tag ${DOCKER_IMAGE} ${DOCKER_IMAGE}:rollback
+
+    - name: Pull latest
+      run: docker pull ${DOCKER_IMAGE}
+
     - name: Deploy EC2
       run: |
         docker compose up -d
         sleep 15
         echo "DEPLOY_STATUS=$(docker inspect --format='{{json .State.Health}}' ${CONTAINER_NAME} | jq | grep unhealthy)" >> $GITHUB_ENV
-
-
-  cd:
-    needs: ci
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_TOKEN }}
-
-      - name: Pull latest docker image
-        run: docker pull ${DOCKER_IMAGE}
-          
-      - name: Run & Test
-        run: |
-          sleep 8
-          docker run -dit --name ${CONTAINER_NAME} ${DOCKER_IMAGE}
-          output=$(docker logs ${CONTAINER_NAME})
-
-          if [[ "${output}" != "Shoham wants to say Hello World!!!" ]]; then
-            echo "the output isn't as expected"
-            echo "the output is: ${output}"
+    
+    - name: Rollback
+      run: |
+        if [[ -z ${DEPLOY_STATUS} ]]; then
+            echo "deploy success, delete old cache, save the cache in use for next build"
+            docker system prune -y
+        else
+            echo "container isn't healthy, rollback"
+            docker tag ${DOCKER_IMAGE}:rollback ${DOCKER_IMAGE}:latest
+            docker compose down
+            docker compose up -d
             exit 1
-          else
-            echo "Deployed Successfully"
-          fi
+        fi
+
