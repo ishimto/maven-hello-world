@@ -30,8 +30,9 @@ jobs:
       run: |
         docker run -dit --name ${CONTAINER_NAME} ${DOCKER_IMAGE}
         output=$(docker logs ${CONTAINER_NAME})
+        echo $output
 
-        if [[ "${output}" != "Shoham wants to say Hello World!!!" ]]; then
+        if [[ "$output" != "Shoham wants to say Hello World!!!" ]]; then
             echo "the output isn't as expected"
             echo "the output is: ${output}"
             exit 1
