@@ -106,7 +106,7 @@ jobs:
       run: |
         if [[ -z ${DEPLOY_STATUS} ]]; then
             echo "deploy success, delete old cache, save the cache in use for next build"
-            docker system prune -y
+            docker system prune -a -f
         else
             echo "container isn't healthy, rollback"
             docker tag ${DOCKER_IMAGE}:rollback ${DOCKER_IMAGE}:latest
