@@ -8,6 +8,7 @@ on:
 
 env:
   DOCKER_IMAGE: ${{ secrets.DOCKER_USERNAME }}/helloapp
+  CONTAINER_NAME: javaproject
 
 jobs:
   ci:
@@ -27,15 +28,16 @@ jobs:
 
     - name: Test Image && Extract artifact
       run: |
-        output=$(docker run --rm $DOCKER_IMAGE)
+        docker run -dit --name ${CONTAINER_NAME} ${DOCKER_IMAGE}
+        output=$(docker logs ${CONTAINER_NAME})
 
-        if [[ "$output" != "Shoham wants to say Hello World!!!" ]]; then
+        if [[ "${output}" != "Shoham wants to say Hello World!!!" ]]; then
             echo "the output isn't as expected"
             echo "the output is: ${output}"
             exit 1
         else
             echo "success, extract artifact"
-            docker cp ${DOCKER_IMAGE}:/myapp-${{ env.VERSION }}.jar .
+            docker cp ${CONTAINER_NAME}:/myapp-${{ env.VERSION }}.jar .
         fi
 
     - name: GitHub artifact
@@ -80,10 +82,13 @@ jobs:
           
       - name: Run & Test
         run: |
-          output=$(docker run --rm $DOCKER_IMAGE)
-          
-          if [[ "$output" != "Shoham wants to say Hello World!!!" ]]; then
+        docker run -dit --name ${CONTAINER_NAME} ${DOCKER_IMAGE}
+        output=$(docker logs ${CONTAINER_NAME})
+
+        if [[ "${output}" != "Shoham wants to say Hello World!!!" ]]; then
             echo "the output isn't as expected"
             echo "the output is: ${output}"
             exit 1
-          fi
+        else
+            echo "Deployed Successfully"
+        fi
