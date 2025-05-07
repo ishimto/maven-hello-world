@@ -2,7 +2,7 @@ services:
   app:
     container_name: ${CONTAINER_NAME}
     build: .
-    image: ${DOCKER_IMAGE}:${VERSION}
+    image: ${DOCKER_IMAGE}:${COMPOSE_VERSION}
     healthcheck:
       test: java -jar /home/nonroot/*.jar | grep "Shoham" || exit 1
       interval: 2s

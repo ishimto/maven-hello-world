@@ -105,7 +105,7 @@ jobs:
         sleep 15
         echo "DEPLOY_STATUS=$(docker inspect --format='{{json .State.Health}}' ${CONTAINER_NAME} | jq | grep unhealthy)" >> $GITHUB_ENV
       env:
-        VERSION: latest
+        COMPOSE_VERSION: latest
     
     - name: Rollback
       run: |
@@ -167,7 +167,7 @@ jobs:
         sleep 15
         echo "DEPLOY_STATUS=$(docker inspect --format='{{json .State.Health}}' ${CONTAINER_NAME} | jq | grep unhealthy)" >> $GITHUB_ENV
       env:
-        VERSION: stable
+        COMPOSE_VERSION: stable
     
     - name: Rollback
       run: |
