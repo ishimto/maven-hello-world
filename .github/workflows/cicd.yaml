@@ -101,7 +101,7 @@ jobs:
     - name: Deploy EC2
       run: |
         docker compose down
-        docker compose up --build -d
+        docker compose up -d
         sleep 15
         echo "DEPLOY_STATUS=$(docker inspect --format='{{json .State.Health}}' ${CONTAINER_NAME} | jq | grep unhealthy)" >> $GITHUB_ENV
     
@@ -114,7 +114,7 @@ jobs:
             echo "container isn't healthy, rollback"
             docker tag ${DOCKER_IMAGE}:rollback ${DOCKER_IMAGE}:latest
             docker compose down
-            docker compose --build up -d
+            docker compose up -d
             exit 1
         fi
 
@@ -161,6 +161,7 @@ jobs:
 
     - name: Deploy EC2
       run: |
+        docker compose down
         docker compose up -d
         sleep 15
         echo "DEPLOY_STATUS=$(docker inspect --format='{{json .State.Health}}' ${CONTAINER_NAME} | jq | grep unhealthy)" >> $GITHUB_ENV
