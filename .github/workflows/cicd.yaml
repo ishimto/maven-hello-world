@@ -67,7 +67,6 @@ jobs:
         author_email: githubactions@ginger.com
         add: 'myapp/pom.xml'
         message: ${{ env.VERSION }}
-        tag_push: '--force'
 
     - name: Setup ssh-agent
       uses: webfactory/ssh-agent@v0.9.0
