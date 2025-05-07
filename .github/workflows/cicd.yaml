@@ -66,6 +66,8 @@ jobs:
         author_email: githubactions@ginger.com
         add: 'myapp/pom.xml'
         message: ${{ env.VERSION }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
 
     - name: setup ssh-agent
       uses: webfactory/ssh-agent@v0.9.0
