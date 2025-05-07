@@ -17,30 +17,28 @@ spec:
     metadata:
       labels:
         app: {{ .Values.app.selectorLabel }}
-      annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/path: "/metrics"
-        prometheus.io/port: "{{ .Values.services.app.targetPort }}"
     spec:
       containers:
       - name: {{ .Values.app.name }}
         image: "{{ .Values.app.image.name }}:{{ .Values.app.image.tag }}"
         imagePullPolicy: {{ .Values.app.image.imagePullPolicy }}
         readinessProbe:
-          httpGet:
-            path: /ready
-            port: {{ .Values.services.app.targetPort }}
+          exec:
+            command:
+            - ls
           initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
           failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
           successThreshold: {{ .Values.readinessProbe.successThreshold }}
         livenessProbe:
-          httpGet:
-            path: /health
-            port: {{ .Values.services.app.targetPort }}
+          exec:
+            command:
+            - ls
           initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
           failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+        ports:
+        - containerPort: {{ .Values.app.containerPort }}
 
       imagePullSecrets:
       - name: docker-cred

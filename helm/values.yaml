@@ -8,7 +8,7 @@ app:
   selectorLabel: java-app
   image:
     name: gingerous/helloapp
-    tag: "1.0.3"
+    tag: "1.0.1"
     imagePullPolicy: Always
   nodeSelector:
     environment: java
@@ -16,11 +16,12 @@ app:
     key: "env"
     value: "java"
     effect: "NoExecute"
+  containerPort: 80
 
 
 readinessProbe:
-  initialDelaySeconds: 30
-  periodSeconds: 10
+  initialDelaySeconds: 10
+  periodSeconds: 5
   failureThreshold: 3
   successThreshold: 2
 
@@ -28,19 +29,3 @@ livenessProbe:
   initialDelaySeconds: 10
   periodSeconds: 5
   failureThreshold: 3
-
-
-ingress:
-  classname: nginx
-  app:
-    name: java-ingress
-    host: java.hello.click
-
-
-services:
-  app:
-    name: java-app-service
-    type: ClusterIP
-    protocol: TCP
-    port: 80
-    targetPort: 80

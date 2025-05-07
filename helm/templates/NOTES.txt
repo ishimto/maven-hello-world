@@ -1,7 +1,10 @@
 Your application {{ .Release.Name }} is now deployed!
 
-It can be accessed at:
-http://{{ .Values.ingress.app.host }}
+To rollback last version:
+helm rollback {{ .Release.Name }}
+
+Specific version you want to rollback:
+helm rollback {{ .Release.Name}} <REVISION NUMBER>
 
 To delete this release:
 helm uninstall {{ .Release.Name }}
