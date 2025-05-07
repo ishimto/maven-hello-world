@@ -45,7 +45,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: myapp-${{ env.VERSION }}
-        path: /home/nonroot/myapp-${{ env.VERSION }}.jar
+        path: myapp-${{ env.VERSION }}.jar
    
     - name: Login to Docker Hub
       uses: docker/login-action@v3
