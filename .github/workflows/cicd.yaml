@@ -8,7 +8,7 @@ on:
 
 env:
   DOCKER_IMAGE: javahello # must be the same as service name in docker compose
-  DOCKER_IMAGE_TAG: ${{ secrets.DOCKER_USERNAME }}/${DOCKER_IMAGE}
+  DOCKER_IMAGE_TAG: ${{ secrets.DOCKER_USERNAME }}/javahello
   CONTAINER_NAME: javaproject
 
 jobs:
