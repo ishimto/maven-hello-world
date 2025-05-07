@@ -1,4 +1,4 @@
 apiVersion: v2
 name: helloworld
-description: helm chart as the exercise demand
+description: helm chart to deploy maven-hello-world
 version: "1.0.0"
