@@ -104,6 +104,8 @@ jobs:
         docker compose up -d
         sleep 15
         echo "DEPLOY_STATUS=$(docker inspect --format='{{json .State.Health}}' ${CONTAINER_NAME} | jq | grep unhealthy)" >> $GITHUB_ENV
+      env:
+        VERSION: latest
     
     - name: Rollback
       run: |
@@ -127,9 +129,6 @@ jobs:
     steps:
     - name: Checkout repository code
       uses: actions/checkout@v4
-
-    - name: Get Version
-      run: echo "VERSION=$(mvn -f myapp/pom.xml help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
     
     - name: setup ssh-agent
       uses: webfactory/ssh-agent@v0.9.0
@@ -167,6 +166,8 @@ jobs:
         docker compose up -d
         sleep 15
         echo "DEPLOY_STATUS=$(docker inspect --format='{{json .State.Health}}' ${CONTAINER_NAME} | jq | grep unhealthy)" >> $GITHUB_ENV
+      env:
+        VERSION: stable
     
     - name: Rollback
       run: |
