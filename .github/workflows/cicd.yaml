@@ -16,6 +16,8 @@ jobs:
   stage:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/stage'
+    env:
+      COMPOSE_VERSION: latest
     steps:
     - name: Checkout repository code
       uses: actions/checkout@v4
@@ -104,8 +106,6 @@ jobs:
         docker compose up -d
         sleep 15
         echo "DEPLOY_STATUS=$(docker inspect --format='{{json .State.Health}}' ${CONTAINER_NAME} | jq | grep unhealthy)" >> $GITHUB_ENV
-      env:
-        COMPOSE_VERSION: latest
     
     - name: Rollback
       run: |
@@ -126,6 +126,8 @@ jobs:
   production:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master'
+    env:
+      COMPOSE_VERSION: stable
     steps:
     - name: Checkout repository code
       uses: actions/checkout@v4
@@ -166,8 +168,6 @@ jobs:
         docker compose up -d
         sleep 15
         echo "DEPLOY_STATUS=$(docker inspect --format='{{json .State.Health}}' ${CONTAINER_NAME} | jq | grep unhealthy)" >> $GITHUB_ENV
-      env:
-        COMPOSE_VERSION: stable
     
     - name: Rollback
       run: |
