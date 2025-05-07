@@ -109,6 +109,7 @@ jobs:
       run: |
         if [[ -z ${DEPLOY_STATUS} ]]; then
             echo "deploy success, delete old cache, save the cache in use for next build"
+            docker docker tag ${DOCKER_IMAGE} ${DOCKER_IMAGE}:stable
             docker system prune -a -f
         else
             echo "container isn't healthy, rollback"
@@ -153,11 +154,11 @@ jobs:
         password: ${{ secrets.DOCKER_TOKEN }}
 
     - name: Tag latest as rollback
-      run: docker tag ${DOCKER_IMAGE} ${DOCKER_IMAGE}:rollback
+      run: docker tag ${DOCKER_IMAGE}:stable ${DOCKER_IMAGE}:rollback
       continue-on-error: true
 
     - name: Pull latest image
-      run: docker pull ${DOCKER_IMAGE}
+      run: docker pull ${DOCKER_IMAGE}:stable
 
     - name: Deploy EC2
       run: |
@@ -173,7 +174,7 @@ jobs:
             docker system prune -a -f
         else
             echo "container isn't healthy, rollback"
-            docker tag ${DOCKER_IMAGE}:rollback ${DOCKER_IMAGE}:latest
+            docker tag ${DOCKER_IMAGE}:stable ${DOCKER_IMAGE}:rollback
             docker compose down
             docker compose up -d
             exit 1
