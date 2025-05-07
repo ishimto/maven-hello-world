@@ -7,7 +7,8 @@ on:
       - "*.md"
 
 env:
-  DOCKER_IMAGE: ${{ secrets.DOCKER_USERNAME }}/helloapp
+  DOCKER_IMAGE: javahello # must be the same as service name in docker compose
+  DOCKER_IMAGE_TAG: ${{ secrets.DOCKER_USERNAME }}/helloapp
   CONTAINER_NAME: javaproject
 
 jobs:
@@ -24,16 +25,14 @@ jobs:
         echo "VERSION=$(mvn -f myapp/pom.xml help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
 
     - name: Build image
-      run:  docker build -t $DOCKER_IMAGE .
+      run:  docker compose up -d
 
     - name: Test Image && Extract artifact
       run: |
-        docker run -dit --name ${CONTAINER_NAME} ${DOCKER_IMAGE}
-        docker logs ${CONTAINER_NAME}
+        status=$(docker inspect --format='{{json .State.Health}}' ${CONTAINER_NAME} | jq | grep unhealthy)
 
-        if [[ "$output" != "Shoham wants to say Hello World!!!" ]]; then
-            echo "the output isn't as expected"
-            echo "the output is: ${output}"
+        if [[ "$status" -eq 0 ]]; then
+            echo "container isn't healthy"
             exit 1
         else
             echo "success, extract artifact"
