@@ -1,0 +1,15 @@
+ingress:
+  classname: nginx
+  app:
+    name: java-ingress
+    host: java.hello.click
+
+
+services:
+  app:
+    name: java-app-service
+    type: ClusterIP
+    protocol: TCP
+    port: 80
+    targetPort: 80
+
