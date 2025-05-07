@@ -29,8 +29,7 @@ jobs:
     - name: Test Image && Extract artifact
       run: |
         docker run -dit --name ${CONTAINER_NAME} ${DOCKER_IMAGE}
-        output=$(docker logs ${CONTAINER_NAME})
-        echo $output
+        docker logs ${CONTAINER_NAME}
 
         if [[ "$output" != "Shoham wants to say Hello World!!!" ]]; then
             echo "the output isn't as expected"
