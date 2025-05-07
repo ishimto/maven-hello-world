@@ -7,8 +7,8 @@ app:
     maxUnavailable: 25%
   selectorLabel: java-app
   image:
-    name: gingerous/helloapp
-    tag: "1.0.1"
+    name: gingerous/javahello
+    tag: "1.0.21"
     imagePullPolicy: Always
   nodeSelector:
     environment: java

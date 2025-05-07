@@ -4,7 +4,7 @@ RUN mvn compile
 RUN mvn package
 
 
-FROM openjdk:17-alpine AS runapp
+FROM amazoncorretto:17.0.7-alpine AS runapp
 COPY --from=buildjar target/*.jar .
 CMD java -jar *.jar && sleep 300
 
