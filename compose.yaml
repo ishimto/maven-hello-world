@@ -2,6 +2,7 @@ services:
   app:
     container_name: ${CONTAINER_NAME}
     build: .
+    image: ${DOCKER_IMAGE}
     healthcheck:
       test: java -jar /*.jar | grep "Shoham" || exit 1
       interval: 2s
