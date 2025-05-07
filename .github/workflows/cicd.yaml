@@ -94,7 +94,7 @@ jobs:
       run: docker tag ${DOCKER_IMAGE} ${DOCKER_IMAGE}:rollback
       continue-on-error: true
 
-    - name: Pull latest
+    - name: Pull latest image
       run: docker pull ${DOCKER_IMAGE}
 
     - name: Deploy EC2
