@@ -72,13 +72,22 @@ jobs:
       with:
         ssh-private-key: ${{ secrets.EC2_DEPLOY_KEY }}
     
-    - name: Deploy to EC2 using docker context
+    - name: setup docker context
       env:
         HOST: ${{ secrets.EC2_HOST }}
         USER: ${{ secrets.EC2_USER }}
       run: |
         docker context create ec2 --docker "host=ssh://${USER}@${HOST}"
         docker context use ec2
+    
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_TOKEN }}
+
+    - name: Deploy EC2
+      run: |
         docker compose up -d
         sleep 15
         echo "DEPLOY_STATUS=$(docker inspect --format='{{json .State.Health}}' ${CONTAINER_NAME} | jq | grep unhealthy)" >> $GITHUB_ENV
