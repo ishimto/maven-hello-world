@@ -5,6 +5,7 @@ If you decided to expose your application out of cluster in efficency use this g
 ---
 
 # folder tree:
+```
 ├── helm-templates
 │   ├── ingress.yaml
 │   ├── services.yaml
@@ -12,7 +13,7 @@ If you decided to expose your application out of cluster in efficency use this g
 └── terraform
     ├── main.tf
     └── provider.tf
-
+```
 
 * Install:
 ./terraform
