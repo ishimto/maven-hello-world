@@ -4,7 +4,7 @@ Ingress NGINX
 If you decided to expose your application out of cluster in efficency use this guide
 ---
 
-dirs:
+# folder tree:
 ├── helm-templates
 │   ├── ingress.yaml
 │   ├── services.yaml
