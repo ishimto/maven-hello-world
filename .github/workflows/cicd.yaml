@@ -29,13 +29,14 @@ jobs:
 
     - name: Test Image && Extract artifact
       run: |
-        docker inspect --format='{{json .State.Health}}' ${CONTAINER_NAME} | jq | grep unhealthy
-        if [[ "$?" -eq 0 ]]; then
-            echo "container isn't healthy"
-            exit 1
-        else
+        output=$(docker inspect --format='{{json .State.Health}}' ${CONTAINER_NAME} | jq | grep unhealthy)
+
+        if [[ -z ${output} ]]; then
             echo "success, extract artifact"
             docker cp ${CONTAINER_NAME}:/myapp-${{ env.VERSION }}.jar .
+        else
+            echo "container isn't healthy"
+            exit 1
         fi
 
     - name: GitHub artifact
