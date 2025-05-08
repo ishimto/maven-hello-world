@@ -17,11 +17,15 @@ env:
 jobs:
   stage:
     runs-on: ubuntu-latest
+
+    # stage and tests branches, NORUN in commit will disable this worflow
     if: |
       (github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/tests') &&
       !contains(github.event.head_commit.message, 'NORUN')
+    
     env:
       COMPOSE_VERSION: latest
+    
     steps:
     - name: Checkout repository code
       uses: actions/checkout@v4
@@ -32,12 +36,13 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_TOKEN }}
     
-    - name: Compose up
+    - name: Build with compose
       run: |
         docker compose up --build -d
         sleep 15
         echo "STATUS=$(docker inspect --format='{{json .State.Health}}' ${CONTAINER_NAME} | jq | grep unhealthy)" >> $GITHUB_ENV
 
+    # Check if the image healthy/not, if it is, it extract artifacts  (pom, jar)
     - name: Test Image && Extract artifact
       run: |
         
@@ -52,18 +57,20 @@ jobs:
             exit 1
         fi
       
+    # Upload it to workflow summary  
     - name: GitHub artifact
       uses: actions/upload-artifact@v4
       with:
         name: myapp-${{ env.VERSION }}
         path: myapp-${{ env.VERSION }}.jar
    
+    # Publish commit hash tag versioning
     - name: Publish docker image to Docker Hub
       run: |
         docker tag ${DOCKER_IMAGE} ${DOCKER_IMAGE}:${{ github.sha }}
         docker push ${DOCKER_IMAGE}
         docker push ${DOCKER_IMAGE}:${{ github.sha }}
-
+    
     - name: Setup ssh-agent
       uses: webfactory/ssh-agent@v0.9.0
       with:
@@ -73,6 +80,7 @@ jobs:
       run: |
         ssh-keyscan -H ${{ secrets.EC2_STAGE_HOST }} >> ~/.ssh/known_hosts
 
+    # Connect to environment dokcer deamon
     - name: Setup docker context
       run: |
         docker context create ec2 --docker "host=ssh://${{ secrets.EC2_USER }}@${{ secrets.EC2_STAGE_HOST }}"
@@ -88,7 +96,8 @@ jobs:
     - name: Tag latest as rollback
       run: docker tag ${DOCKER_IMAGE} ${DOCKER_IMAGE}:rollback
       continue-on-error: true
-
+    
+    # make sure that compose will use the recent image
     - name: Pull latest image
       run: docker compose pull
 
@@ -98,12 +107,13 @@ jobs:
         docker compose up -d
         sleep 15
         echo "DEPLOY_STATUS=$(docker inspect --format='{{json .State.Health}}' ${CONTAINER_NAME} | jq | grep unhealthy)" >> $GITHUB_ENV
-
+    
+    # Check if deploy success, if everything going well, it deletes dangling cache, if not, rollback
     - name: Rollback
       run: |
         if [[ -z ${DEPLOY_STATUS} ]]; then
             echo "deploy success, delete old cache, save the cache in use for next build"
-            docker system prune -a -f
+            docker image prune -a --filter "until=5m"
         else
             echo "container isn't healthy, rollback"
             docker tag ${DOCKER_IMAGE}:rollback ${DOCKER_IMAGE}:latest
@@ -112,6 +122,7 @@ jobs:
             exit 1
         fi
 
+    # in stage, publish versioning for version after success CI/CD
     - name: Publish docker image to Docker Hub
       if: github.ref == 'refs/heads/stage'
       run: |
@@ -129,7 +140,9 @@ jobs:
 
 
   production:
-    runs-on: ubuntu-latest    
+    runs-on: ubuntu-latest
+
+    # master branch, NORUN in commit will disable this worflow
     if: |
       (github.ref == 'refs/heads/master') &&
       !contains(github.event.head_commit.message, 'NORUN')
@@ -137,6 +150,7 @@ jobs:
     - name: Checkout repository code
       uses: actions/checkout@v4
 
+    # get last stable deployment version
     - name: Get Version
       run: |
         VERSION=$(mvn -f myapp/pom.xml help:evaluate -Dexpression=project.version -q -DforceStdout)
@@ -151,6 +165,7 @@ jobs:
       run: |
         ssh-keyscan -H ${{ secrets.EC2_PROD_HOST }} >> ~/.ssh/known_hosts
     
+    # Connect to production docker deamon
     - name: Setup docker context
       run: |
         docker context create ec2 --docker "host=ssh://${{ secrets.EC2_USER }}@${{ secrets.EC2_PROD_HOST }}"
@@ -162,7 +177,7 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_TOKEN }}
 
-    - name: Tag latest as rollback
+    - name: Tag stable as rollback
       run: docker tag ${DOCKER_IMAGE}:stable ${DOCKER_IMAGE}:rollback
       continue-on-error: true
 
@@ -175,11 +190,12 @@ jobs:
         sleep 15
         echo "DEPLOY_STATUS=$(docker inspect --format='{{json .State.Health}}' ${CONTAINER_NAME} | jq | grep unhealthy)" >> $GITHUB_ENV
     
+    # Check if deploy success, if everything going well, it deletes dangling cache, if not, rollback
     - name: Rollback to stable
       run: |
         if [[ -z ${DEPLOY_STATUS} ]]; then
             echo "deploy success, delete old cache, save the cache in use for next build"
-            docker system prune -a -f
+            docker image prune -a --filter "until=5m"
         else
             echo "container isn't healthy, rollback"
             docker tag ${DOCKER_IMAGE}:rollback ${DOCKER_IMAGE}:stable
@@ -187,7 +203,8 @@ jobs:
             docker compose up -d
             exit 1
         fi
-
+    
+    # Update stable version in repository
     - name: Publish docker image to Docker Hub
       run: |
         docker tag ${DOCKER_IMAGE}:${{ env.VERSION }} ${DOCKER_IMAGE}:stable
