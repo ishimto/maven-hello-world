@@ -184,9 +184,6 @@ that life cycle manage the build process, includes 7 phases, when you run phase 
 7. deploy - same as local but to remote repo, let collaborate with other developers or in order to manage versioning if needed.
 in order to let deploy work, who that try to use it need to define settings.xml and pom.xml the server credentials and permissions.
 
-ENDS OF DEFAULT LIFECYCLE, now after i explained about it, it will be easier to understand what i meant before when i wrote "when you run phase it will run the all phases before until it and not just it" in thge first LifeCycles unit.
-
-
 * clean:
 thats lifecycle important if you run maven in the same environment over and over again, you clean the target directory, and let you to compile next time into clean environment.
 
@@ -195,3 +192,14 @@ that lifecycle responsible of create documents for the porject, create static si
 the data for documents is taken from existing data like result of unitests if there are.
 the documents saved in target/site
 
+
+now after i explained about it, it will be easier to understand what i meant before when i wrote "when you run phase it will run the all phases before until it and not just it" in thge first LifeCycles unit.
+
+
+
+### maven in our project
+that project based on java, therfore we need to compile test etc.. maven automate the build process in our project.
+out project using dockerfile to increment the patch using maven plugin, compile and package it and in the and run it in container on production environemt.
+you can find the Dockerfile i mentiond, right here:
+.
+├── Dockerfile
