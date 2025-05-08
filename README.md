@@ -381,8 +381,11 @@ if you are using git, make sure the name of secret.yaml in your .gitignore, to m
 6. go to ./ingress-nginx/README.md and follow this guide
 
 7. go to ./helm and write the following command to create helm release
-
+helm install [your-release-name) .
 8. wait few seconds then check your ingress host url, congrats!!!!
+
+if you change something in the manifest, run:
+helm upgrade [your-release-name) .
 
 
 ### Deployment Strategy:
