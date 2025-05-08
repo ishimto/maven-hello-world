@@ -36,7 +36,7 @@ jobs:
             echo "success, extract artifact"
             docker cp ${CONTAINER_NAME}:/home/nonroot/pom.xml ./myapp/pom.xml
             echo "VERSION=$(mvn -f myapp/pom.xml help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
-            docker cp ${CONTAINER_NAME}:/home/nonroot/myapp-${{ VERSION }}.jar .
+            docker cp ${CONTAINER_NAME}:/home/nonroot/myapp-${VERSION}.jar .
         else
             echo "container isn't healthy"
             exit 1
