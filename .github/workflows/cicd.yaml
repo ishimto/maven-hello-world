@@ -17,8 +17,9 @@ env:
 jobs:
   stage:
     runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, 'NORUN')"
-    #if: github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/tests'
+    if: |
+      (github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/tests') &&
+      !contains(github.event.head_commit.message, 'NORUN')
     env:
       COMPOSE_VERSION: latest
     steps:
@@ -51,7 +52,6 @@ jobs:
             exit 1
         fi
       
-
     - name: GitHub artifact
       uses: actions/upload-artifact@v4
       with:
@@ -64,7 +64,6 @@ jobs:
         docker push ${DOCKER_IMAGE}
         docker push ${DOCKER_IMAGE}:${{ github.sha }}
 
-
     - name: Setup ssh-agent
       uses: webfactory/ssh-agent@v0.9.0
       with:
@@ -73,20 +72,18 @@ jobs:
     - name: Add EC2 host to known hosts
       run: |
         ssh-keyscan -H ${{ secrets.EC2_STAGE_HOST }} >> ~/.ssh/known_hosts
-    
+
     - name: Setup docker context
-      env:
-        HOST: ${{ secrets.EC2_STAGE_HOST }}
-        USER: ${{ secrets.EC2_USER }}
       run: |
-        docker context create ec2 --docker "host=ssh://${USER}@${HOST}"
-        docker context use ec2
-    
+        docker context create ec2 --docker "host=ssh://${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}"
+        docker context use ec2   
+
     - name: Login to Docker Hub
       uses: docker/login-action@v3
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_TOKEN }}
+
 
     - name: Tag latest as rollback
       run: docker tag ${DOCKER_IMAGE} ${DOCKER_IMAGE}:rollback
@@ -101,7 +98,7 @@ jobs:
         docker compose up -d
         sleep 15
         echo "DEPLOY_STATUS=$(docker inspect --format='{{json .State.Health}}' ${CONTAINER_NAME} | jq | grep unhealthy)" >> $GITHUB_ENV
-    
+
     - name: Rollback
       run: |
         if [[ -z ${DEPLOY_STATUS} ]]; then
@@ -114,13 +111,12 @@ jobs:
             docker compose up -d
             exit 1
         fi
-    
+
     - name: Publish docker image to Docker Hub
       if: github.ref == 'refs/heads/stage'
       run: |
         docker tag ${DOCKER_IMAGE} ${DOCKER_IMAGE}:${{ env.VERSION }}
         docker push ${DOCKER_IMAGE}:${{ env.VERSION }}
-
 
     - name: Update pom.xml with new version
       if: github.ref == 'refs/heads/stage'
@@ -134,7 +130,9 @@ jobs:
 
   production:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master'
+    if: |
+      (github.ref == 'refs/heads/master' &&
+      !contains(github.event.head_commit.message, 'NORUN')
     steps:
     - name: Checkout repository code
       uses: actions/checkout@v4
@@ -143,7 +141,6 @@ jobs:
       run: |
         VERSION=$(mvn -f myapp/pom.xml help:evaluate -Dexpression=project.version -q -DforceStdout)
         echo "VERSION=$VERSION" >> $GITHUB_ENV
-
 
     - name: setup ssh-agent
       uses: webfactory/ssh-agent@v0.9.0
@@ -155,11 +152,8 @@ jobs:
         ssh-keyscan -H ${{ secrets.EC2_PROD_HOST }} >> ~/.ssh/known_hosts
     
     - name: Setup docker context
-      env:
-        HOST: ${{ secrets.EC2_PROD_HOST }}
-        USER: ${{ secrets.EC2_USER }}
       run: |
-        docker context create ec2 --docker "host=ssh://${USER}@${HOST}"
+        docker context create ec2 --docker "host=ssh://${{ secrets.EC2_ USER }}@${{ secrets.EC2_PROD_HOST }}"
         docker context use ec2
     
     - name: Login to Docker Hub
