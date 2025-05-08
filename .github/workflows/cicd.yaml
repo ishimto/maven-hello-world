@@ -41,7 +41,7 @@ jobs:
         --tag ${DOCKER_IMAGE} \
         .
 
-    - name: Build image
+    - name: Compose up
       run: |
         docker compose up -d
         sleep 15
