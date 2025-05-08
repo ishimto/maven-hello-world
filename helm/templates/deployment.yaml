@@ -1,51 +1,68 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.app.name }}
-  namespace: {{ .Values.app.namespace }}
+  name: {{ .Values.java.name }}
+  namespace: {{ .Values.java.namespace }}
 spec:
-  replicas: {{ .Values.app.replicaCount }}
+  replicas: {{ .Values.replicaCount.java }}
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxSurge: {{ .Values.app.rollingUpdate.maxSurge }}
-      maxUnavailable: {{ .Values.app.rollingUpdate.maxUnavailable }}
+      maxSurge: {{ .Values.strategy.rollingUpdate.maxSurge }}
+      maxUnavailable: {{ .Values.strategy.rollingUpdate.maxUnavailable }}
   selector:
     matchLabels:
-      app: {{ .Values.app.selectorLabel }}
+      app: {{ .Values.java.selector }}
   template:
     metadata:
       labels:
-        app: {{ .Values.app.selectorLabel }}
+        app: {{ .Values.java.selector }}
     spec:
+
+      volumes:
+      - name: shared-data
+        emptyDir: {}
+
       containers:
-      - name: {{ .Values.app.name }}
-        image: "{{ .Values.app.image.name }}:{{ .Values.app.image.tag }}"
-        imagePullPolicy: {{ .Values.app.image.imagePullPolicy }}
+
+      - name: {{ .Values.java.javaapp.name }}
+        image: "{{ .Values.java.javaapp.image.name }}:{{ .Values.java.javaapp.image.tag }}"
+        command: ["sh", "-c"]
+        args:
+        - java -jar /home/nonroot/myapp-1.0.31.jar >> /home/nonroot/shared/output.txt && sleep 300
+        imagePullPolicy: {{ .Values.java.javaapp.imagePullPolicy }}
+        volumeMounts:
+        - name: shared-data
+          mountPath: /home/nonroot/shared
+
+
+      - name: {{ .Values.java.sidecar.name }}
+        image: "{{ .Values.java.sidecar.image.name }}:{{ .Values.java.sidecar.image.tag }}"
+        imagePullPolicy: {{ .Values.java.sidecar.imagePullPolicy }}
         readinessProbe:
-          exec:
-            command:
-            - ls
-          initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
-          periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
-          failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
-          successThreshold: {{ .Values.readinessProbe.successThreshold }}
+          httpGet:
+            path: {{ .Values.java.sidecar.readinessProbe.path }}
+            port: {{ .Values.java.sidecar.readinessProbe.port }}
+          initialDelaySeconds:  {{ .Values.java.sidecar.readinessProbe.initialDelaySeconds }}
+          periodSeconds:  {{ .Values.java.sidecar.readinessProbe.periodSeconds }}
         livenessProbe:
-          exec:
-            command:
-            - ls
-          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
-          periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
-          failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
-        ports:
-        - containerPort: {{ .Values.app.containerPort }}
+          httpGet:
+            path:  {{ .Values.java.sidecar.livenessProbe.path }}
+            port:  {{ .Values.java.sidecar.livenessProbe.port }}
+          initialDelaySeconds:  {{ .Values.java.sidecar.livenessProbe.initialDelaySeconds }}
+          periodSeconds:  {{ .Values.java.sidecar.livenessProbe.periodSeconds }}
+          failureThreshold:  {{ .Values.java.sidecar.livenessProbe.failureThreshold }}
+        volumeMounts:
+        - name: shared-data
+          mountPath: /usr/share/
 
       imagePullSecrets:
-      - name: docker-cred
+      - name: {{ .Values.java.imagePullSecrets }}
 
       nodeSelector:
-        environment: {{ .Values.app.nodeSelector.environment }}
+        environment: {{ .Values.java.nodeSelector.environment }}
+      
       tolerations:
-        - key: {{ .Values.app.tolerations.key }}
-          value: {{ .Values.app.tolerations.value }}
-          effect: {{ .Values.app.tolerations.effect }}
+        - key: {{ .Values.java.tolerations.key }}
+          value: {{ .Values.java.tolerations.value }}
+          effect: {{ .Values.java.tolerations.effect }}

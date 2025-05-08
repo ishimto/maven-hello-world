@@ -4,6 +4,7 @@ on:
     branches:
       - master
       - stage
+      - test*
     paths-ignore:
       - "*.md"
 
@@ -15,17 +16,12 @@ env:
 jobs:
   stage:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/stage'
+    if: github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/tests'
     env:
       COMPOSE_VERSION: latest
     steps:
     - name: Checkout repository code
       uses: actions/checkout@v4
-
-    - name: Increase patch
-      run: |
-        mvn -f myapp/pom.xml build-helper:parse-version versions:set -DnewVersion='${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.nextIncrementalVersion}'
-        echo "VERSION=$(mvn -f myapp/pom.xml help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
 
     - name: Build image
       run: |
@@ -38,11 +34,15 @@ jobs:
         
         if [[ -z ${STATUS} ]]; then
             echo "success, extract artifact"
-            docker cp ${CONTAINER_NAME}:/home/nonroot/myapp-${{ env.VERSION }}.jar .
+            docker cp ${CONTAINER_NAME}:/home/nonroot/pom.xml ./myapp/pom.xml
+            VERSION=$(mvn -f myapp/pom.xml help:evaluate -Dexpression=project.version -q -DforceStdout)
+            echo "VERSION=$VERSION" >> $GITHUB_ENV
+            docker cp ${CONTAINER_NAME}:/home/nonroot/myapp-${VERSION}.jar .
         else
             echo "container isn't healthy"
             exit 1
         fi
+      
 
     - name: GitHub artifact
       uses: actions/upload-artifact@v4
@@ -55,20 +55,14 @@ jobs:
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_TOKEN }}
+    
 
     - name: Publish docker image to Docker Hub
       run: |
-        docker tag ${DOCKER_IMAGE} ${DOCKER_IMAGE}:${{ env.VERSION }}
+        docker tag ${DOCKER_IMAGE} ${DOCKER_IMAGE}:${{ github.sha }}
         docker push ${DOCKER_IMAGE}
-        docker push ${DOCKER_IMAGE}:${{ env.VERSION }}
+        docker push ${DOCKER_IMAGE}:${{ github.sha }}
 
-    - name: Update pom.xml with new version
-      uses: EndBug/add-and-commit@v9
-      with:
-        author_name: ${{ github.actor }}
-        author_email: githubactions@ginger.com
-        add: 'myapp/pom.xml'
-        message: ${{ env.VERSION }}
 
     - name: Setup ssh-agent
       uses: webfactory/ssh-agent@v0.9.0
@@ -111,8 +105,6 @@ jobs:
       run: |
         if [[ -z ${DEPLOY_STATUS} ]]; then
             echo "deploy success, delete old cache, save the cache in use for next build"
-            docker tag ${DOCKER_IMAGE} ${DOCKER_IMAGE}:stable
-            docker push ${DOCKER_IMAGE}:stable
             docker system prune -a -f
         else
             echo "container isn't healthy, rollback"
@@ -121,17 +113,37 @@ jobs:
             docker compose up -d
             exit 1
         fi
+    
+    - name: Publish docker image to Docker Hub
+      if: github.ref == 'refs/heads/stage'
+      run: |
+        docker tag ${DOCKER_IMAGE} ${DOCKER_IMAGE}:${{ env.VERSION }}
+        docker push ${DOCKER_IMAGE}:${{ env.VERSION }}
+
+
+    - name: Update pom.xml with new version
+      if: github.ref == 'refs/heads/stage'
+      uses: EndBug/add-and-commit@v9
+      with:
+        author_name: ${{ github.actor }}
+        author_email: githubactions@ginger.com
+        add: 'myapp/pom.xml'
+        message: ${{ env.VERSION }}
 
 
   production:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master'
-    env:
-      COMPOSE_VERSION: stable
     steps:
     - name: Checkout repository code
       uses: actions/checkout@v4
-    
+
+    - name: Get Version
+      run: |
+        VERSION=$(mvn -f myapp/pom.xml help:evaluate -Dexpression=project.version -q -DforceStdout)
+        echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+
     - name: setup ssh-agent
       uses: webfactory/ssh-agent@v0.9.0
       with:
@@ -160,9 +172,11 @@ jobs:
       continue-on-error: true
 
     - name: Pull latest image
-      run: docker pull ${DOCKER_IMAGE}:stable
+      run: docker pull ${DOCKER_IMAGE}:${{ env.VERSION }}
 
     - name: Deploy EC2
+      env:
+        COMPOSE_VERSION:  ${{ env.VERSION }}
       run: |
         docker compose down
         docker compose up -d
@@ -176,8 +190,15 @@ jobs:
             docker system prune -a -f
         else
             echo "container isn't healthy, rollback"
-            docker tag ${DOCKER_IMAGE}:stable ${DOCKER_IMAGE}:rollback
+            docker tag ${DOCKER_IMAGE}:rollback ${DOCKER_IMAGE}:stable
             docker compose down
             docker compose up -d
             exit 1
         fi
+
+    - name: Publish docker image to Docker Hub
+      run: |
+        docker tag ${DOCKER_IMAGE}:${{ env.VERSION }} ${DOCKER_IMAGE}:stable
+        docker push ${DOCKER_IMAGE}:stable
+
+

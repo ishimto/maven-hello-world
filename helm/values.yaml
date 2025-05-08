@@ -1,31 +1,68 @@
-app:
-  name: helloworld
+java:
+  name: java-deployment
   namespace: java
-  replicaCount: 2
+  selector: java-app
+  
+  javaapp:
+    name: hello-java
+    image:
+      name: "gingerous/javahello"
+      tag:  "1.0.31"
+    imagePullPolicy: Always
+
+  sidecar:
+    name: sidecar
+    image:
+      name: "gingerous/hellopython"
+      tag: "latest"
+    imagePullPolicy: Always
+    containerPort: 8000
+
+    readinessProbe:
+      path: /ready
+      port: 8000
+      initialDelaySeconds: 15
+      periodSeconds: 3
+
+    livenessProbe:
+      path: /health
+      port: 8000
+      initialDelaySeconds: 10
+      periodSeconds: 5
+      failureThreshold: 3
+
+  imagePullSecrets: docker-cred
+
+  nodeSelector:
+    environment: java
+
+  tolerations:
+    key: env
+    value: java
+    effect: NoExecute
+
+
+services:
+  java:
+    name: sidercar-service
+    type: ClusterIP
+    protocol: TCP
+    port: 80
+
+
+ingress:
+  ingressClassName: nginx
+  java:
+    name: sidecar-ingress
+    host: java.ginger-ous.click
+    
+
+strategy:
   rollingUpdate:
     maxSurge: 25%
     maxUnavailable: 25%
-  selectorLabel: java-app
-  image:
-    name: gingerous/javahello
-    tag: "1.0.21"
-    imagePullPolicy: Always
-  nodeSelector:
-    environment: java
-  tolerations:
-    key: "env"
-    value: "java"
-    effect: "NoExecute"
-  containerPort: 80
 
 
-readinessProbe:
-  initialDelaySeconds: 10
-  periodSeconds: 5
-  failureThreshold: 3
-  successThreshold: 2
 
-livenessProbe:
-  initialDelaySeconds: 10
-  periodSeconds: 5
-  failureThreshold: 3
+replicaCount:
+  java: 1
