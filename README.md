@@ -6,14 +6,18 @@ Regardless of the software product that you will make, probably you often integr
 In that project you will understand deeply (hopefully) the CI/CD part's that might could help you in your own SDLC - Software Development Life-Cycle.
 
 
+
+
 ## Key Topics
 The following topics will be coverd in thats project:
+* Project Requirements
 * Git Branching Strategy
 * GitHub Actions
 * Sementic Versioning
 * Maven
 * Docker
 * K8s + Helm
+
 
 ### Folder Tree Reference:
 ```
@@ -55,6 +59,43 @@ The following topics will be coverd in thats project:
 ```
 
 
+## Project Requirements
+
+### Cloud
+in order to use this project, you'll need to create EC2's in AWS and config it with:
+1. docker
+2. docker compose
+
+create user with permissions to docker and docker compose, and save his credentials for later, secrets.
+
+### Github Repository
+in order to use this project you'll need to create repo and fork this proejct, with 3 branches.
+1. master - protected branch.
+2. stage
+3. test
+
+using the branching strategy i will mention below.
+
+
+### Docker Repository
+create repository in your docker registry, and make it private.
+
+
+### Github Repository Secrets
+in order to use this project, you'll need to define the following variables in secrets of github actions with the mentioned name (or edit the workflow):
+* DOCKER_REPO - your docker repository name for tagging when you push.
+* DOCKER_USERNAME - your docker username.
+* DOCKER_TOKEN - create docker token for your account for securely connect, dont use your password, although github saved it securely.
+* EC2_PROD_HOST - production ip to let docker context deploy the container.
+* EC2_PROD_KEY - production ssh key, for docker context.
+* EC2_STAGE_HOST - stage ip for docker context.
+* EC2_STAGE_KEY - stage ssh key, for docker context.
+* EC2_USER - define with ec2-user, it's the default. if not then create secret for stage and prod, and change it in CI/CD where the HOST is for stage.
+
+### HELM Project
+Will be explained at the end of the readme.
+
+
 ## Git Branching Strategy
 The common git branching strategies are Git Flow, Github Flow, Trunk, Gitlab Flow, each one has his own pros and cons.
 Github Flow and Trunk used for small-med teams, using 2 branches in the formal version, these methods used for fast development out of main branch and merge/commit directly.
@@ -83,6 +124,7 @@ in our project we use the most prefared tool to integrate with github --> Github
 * Jobs
 * Steps
 * Actions
+* Secrets
 
 ### Overview
 Github Actions CI/CD file calls Workflow, in compare to jenkins --> Jenkinsfile.
@@ -96,7 +138,6 @@ the action saved in repository as action.yaml the first part of action name is t
 i.e: actions/checkout@v4, you can find it in "actions" organization in checkout repo with version tag 4.
 this actions simplifies the CI/CD process, i.e, instead of doing git clone ... you can use actions/checkout@v4 to checkout your code in short block,
 and there are a lot of actions that can be usefully. in compare to jenkins --> Plugins.
-
 
 
 
@@ -138,7 +179,7 @@ if you create your folder tree like the below tree, maven will know where to loo
 ```
 
 ### WHY WE NEED IT??
-as mentiond above, maven is a build automation tool and project management for java project, but what does it mean??
+as mentioned above, maven is a build automation tool and project management for java project, but what does it mean??
 before maven, we needed to:
 * manage dependencies - install the JAR (libraries) of third party, save them in folder in out project, and if one library needs other we needed to understand it by ourself, and install the other depend library.
 * build - before maven we needed to build scripts to build our project includes the following steps:
@@ -199,11 +240,38 @@ now after i explained about it, it will be easier to understand what i meant bef
 ### maven in our project
 that project based on java, therfore we need to compile test etc.. maven automate the build process in our project.
 out project using dockerfile to increment the patch using maven plugin, compile and package it and in the and run it in container on production environemt.
-you can find the Dockerfile i mentiond, right here:
+you can find the Dockerfile i mentioned, right here:
 ```
 .
 ├── Dockerfile
 ```
 
 ## Docker
+if you read about CI/CD i assume you already know what is it docker so i'll not digging in it too much.
+in the project, docker used as a containerization tool for java application.
 
+### Keywords
+* dockerfile
+* docker compose
+* docker deamon
+* docker context
+
+
+### Overview
+the workflow using docker compose with dockerfile to automate the build of container.
+
+### tree file reference
+```
+.
+├── compose.yaml
+├── Dockerfile
+```
+
+
+project dockerfile using multi-stage to using cache for building, and save just the artifact that needed for the final image in order to decrease her size.
+for security, in dockerfile, we used nonroot user, as "at least privileaged".
+the build tool in our project is maven, as i mentioned above, maven increment the metadata of version in pom file, compile and build the artifact.
+we used docker compose with simple healthcheck to verify in the CI/CD, if the application healthy/unhealthy when it distribute.
+the way that implement to distribute the container in CI/CD over environments was docker context.
+docker context means "which docker deamon the docker cli speak with" when you running commands with docker, like docker compose up or docker run/build etc...
+the docker context in this project use SSH to communicate with the other docker deamon, to implement it we needed to use ssh-agent in order to save the SSH key and let docker context communicate securely.
