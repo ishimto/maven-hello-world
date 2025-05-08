@@ -62,14 +62,6 @@ jobs:
         docker push ${DOCKER_IMAGE}
         docker push ${DOCKER_IMAGE}:${{ env.VERSION }}
 
-    - name: Update pom.xml with new version
-      uses: EndBug/add-and-commit@v9
-      with:
-        author_name: ${{ github.actor }}
-        author_email: githubactions@ginger.com
-        add: 'myapp/pom.xml'
-        message: ${{ env.VERSION }}
-
     - name: Setup ssh-agent
       uses: webfactory/ssh-agent@v0.9.0
       with:
@@ -121,6 +113,14 @@ jobs:
             docker compose up -d
             exit 1
         fi
+
+    - name: Update pom.xml with new version
+      uses: EndBug/add-and-commit@v9
+      with:
+        author_name: ${{ github.actor }}
+        author_email: githubactions@ginger.com
+        add: 'myapp/pom.xml'
+        message: ${{ env.VERSION }}
 
 
   production:
