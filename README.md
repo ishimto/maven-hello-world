@@ -99,3 +99,21 @@ this actions simplifies the CI/CD process, i.e, instead of doing git clone ... y
 and there are a lot of actions that can be usefully. in compare to jenkins --> Plugins.
 
 
+
+
+## Sementic Versioning
+Regardless the code you write, it's better to version it so you can know rollback in case it needed or manage few versions if it needed, it also good for docs.
+There are a lot of versioning methods, in our project we used sementic version, that build from 3 numbers splitted with ".", like "1.0.0" or "4.2.3" etc..
+but WAIT!!!!! i wrote 1.0.0 then 4.2.3, what each number mean?
+so.. it's splitted by that methods:   Major.Minor.Patch
+* Major version incremented when there are breaked changes the existing api.
+* Minor version incremented when there are changes but not breaked one, like adding more features.
+* Patch version incremented when there are bug fixes and non functionallity changed.
+
+
+in that CI/CD we incremented just the Patch, and that's what the workflow will do if you merge to stage and it pass the tests succesfully.
+if you want to change so it can increment the Major and Minor there is a Action that created by the community (remember? we talked about it before..).
+the action name is: nnichols/maven-version-bump-action@v3, it works with commit, searches for #patch #minor #major and increment the chosen one.
+
+
+
