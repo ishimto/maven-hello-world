@@ -1,3 +1,4 @@
+# Multi stage Docker
 FROM maven:3.9.2 AS build
 COPY myapp/pom.xml ./pom.xml
 RUN mvn dependency:go-offline
