@@ -61,14 +61,14 @@ The following topics will be coverd in thats project:
 
 ## Project Requirements
 
-### Cloud
+### Cloud:
 in order to use this project, you'll need to create EC2's in AWS and config it with:
 1. docker
 2. docker compose
 
 create user with permissions to docker and docker compose, and save his credentials for later, secrets.
 
-### Github Repository
+### Github Repository:
 in order to use this project you'll need to create repo and fork this proejct, with 3 branches.
 1. master - protected branch.
 2. stage
@@ -77,11 +77,11 @@ in order to use this project you'll need to create repo and fork this proejct, w
 using the branching strategy i will mention below.
 
 
-### Docker Repository
+### Docker Repository:
 create repository in your docker registry, and make it private.
 
 
-### Github Repository Secrets
+### Github Repository Secrets:
 in order to use this project, you'll need to define the following variables in secrets of github actions with the mentioned name (or edit the workflow):
 * DOCKER_REPO - your docker repository name for tagging when you push.
 * DOCKER_USERNAME - your docker username.
@@ -92,7 +92,7 @@ in order to use this project, you'll need to define the following variables in s
 * EC2_STAGE_KEY - stage ssh key, for docker context.
 * EC2_USER - define with ec2-user, it's the default. if not then create secret for stage and prod, and change it in CI/CD where the HOST is for stage.
 
-### HELM Project
+### HELM Project:
 Will be explained at the end of the readme.
 
 
@@ -102,7 +102,7 @@ Github Flow and Trunk used for small-med teams, using 2 branches in the formal v
 Git Flow and Gitlab Flow used for med-large teams using 4-5 branches, with propuse for each branch like hotfix in prod, test new features etc..
 In this project the chosen branching strategy was costum branching strategy some where between the above branche's mentioned, using 3 branches, some places calls it "Three Branch Strategy", and in other versions of trunk there is more branch and it can play like this practice, but it's not have a formal name.
 
-### Branches in our project:
+### Dive into the project:
 * master - protected branch, what means push accepted just with Pull Request, after review. that branch used to hold production stable version.
 * stage - used to test the code in environment that's look like the production, but it's not, and check if the version stable to be in the prod.
 * features - same as stage, run tests and check the version and when it work's on features, we merge it into stage.
@@ -118,7 +118,7 @@ in the stage environment we update in the end the version in pom.xml (we'll talk
 There are a lot of tools for CI/CD like jenkins, gitlab-ci etc.. each one has it's own benefits.
 in our project we use the most prefared tool to integrate with github --> Github Actions, but why?
 
-### Keywords
+### Keywords:
 * Workflow
 * Triggers
 * Jobs
@@ -126,7 +126,7 @@ in our project we use the most prefared tool to integrate with github --> Github
 * Actions
 * Secrets
 
-### Overview
+### Overview:
 Github Actions CI/CD file calls Workflow, in compare to jenkins --> Jenkinsfile.
 in the workflow you define few things:
 * triggers - to start the CI/CD process like push,pr and more, it's very flexible.
@@ -140,6 +140,18 @@ this actions simplifies the CI/CD process, i.e, instead of doing git clone ... y
 and there are a lot of actions that can be usefully. in compare to jenkins --> Plugins.
 
 
+### Dive into the project:
+in our workflow, it splitted into 2 jobs:
+1st:
+job used to run in tests branch, build and check if everything OK with current version, not update the version.
+job used to run in stage branch, build and check, and also update the version both in docker repository and in the pom.xml, after everything run succesfully and deployed on stage environment in the end.
+
+2nd:
+job used to run when pull requests merged into the master branch, after review and from stage branch what means it deployed succesfully on environment same as the production, it's not build, just deploy, if it failed, it's rollback to the last stable version, if it success, it's update tag the image with stable, now the image have 2 tags, version and stable.
+
+
+the reason in that's project the workflow splitted into 2 jobs and not one, to make it easy to maintain each environment and don't make mix with a lot of "if" statements.
+
 
 ## Sementic Versioning
 Regardless the code you write, it's better to version it so you can know rollback in case it needed or manage few versions if it needed, it also good for docs.
@@ -151,6 +163,7 @@ so.. it's splitted by that method:   Major.Minor.Patch
 * Patch version incremented when there are bug fixes and non functionallity changed.
 
 
+### Dive into the project:
 in that CI/CD we incremented just the Patch, and that's what the workflow will do if you merge to stage and it pass the tests succesfully.
 if you want to change so it can increment the Major and Minor there is a Action that created by the community (remember? we talked about it before..).
 the action name is: nnichols/maven-version-bump-action@v3, it works with commit, searches for #patch #minor #major and increment the chosen one.
@@ -178,7 +191,7 @@ if you create your folder tree like the below tree, maven will know where to loo
 │                       └── AppTest.java
 ```
 
-### WHY WE NEED IT??
+### WHY DO WE NEED IT??
 as mentioned above, maven is a build automation tool and project management for java project, but what does it mean??
 before maven, we needed to:
 * manage dependencies - install the JAR (libraries) of third party, save them in folder in out project, and if one library needs other we needed to understand it by ourself, and install the other depend library.
@@ -186,7 +199,7 @@ before maven, we needed to:
   clean, compile, test, package, install and deploy (sometimes also verify and validate as tests).
 maven solves it with concept that calls LifeCycles and there are 3 types of lifecycles - default, clean, site.
 
-### pom.xml
+### pom.xml:
 file xml that contains:
 * metadata of the project - like version, artifact name (ID) etc..
 * dependencies - maven will install it automaticlly, includes them nested dependencies (automation!!!)
@@ -197,7 +210,7 @@ file xml that contains:
 etc..
 
 
-### Plugins && Goals
+### Plugins && Goals:
 plugins are the tools that actually runs the phases in the lifecycle, without them maven not have a real value.
 each step in the lifecycle don't really know how to do things, it just "trigger" that run goal from plugin.
 so what goal mean?
@@ -209,7 +222,7 @@ if you want to specify a specific version of plugin or running a specific plugin
 the order in pom.xml not say anything, maven still doing it by the order of lifecycle, unless you specify the phase in the plugin execution.
 
 
-### Life Cycles
+### Life Cycles:
 so.. what does it mean lifecycle?
 life cycle are steps or "phases" that maven over on them in specific order.
 
@@ -237,7 +250,7 @@ now after i explained about it, it will be easier to understand what i meant bef
 
 
 
-### maven in our project
+### Dive into the project:
 that project based on java, therfore we need to compile test etc.. maven automate the build process in our project.
 out project using dockerfile to increment the patch using maven plugin, compile and package it and in the and run it in container on production environemt.
 you can find the Dockerfile i mentioned, right here:
@@ -250,17 +263,17 @@ you can find the Dockerfile i mentioned, right here:
 if you read about CI/CD i assume you already know what is it docker so i'll not digging in it too much.
 in the project, docker used as a containerization tool for java application.
 
-### Keywords
+### Keywords:
 * dockerfile
 * docker compose
 * docker deamon
 * docker context
 
 
-### Overview
+### Overview:
 the workflow using docker compose with dockerfile to automate the build of container.
 
-### tree file reference
+### tree file reference:
 ```
 .
 ├── compose.yaml
@@ -275,3 +288,131 @@ we used docker compose with simple healthcheck to verify in the CI/CD, if the ap
 the way that implement to distribute the container in CI/CD over environments was docker context.
 docker context means "which docker deamon the docker cli speak with" when you running commands with docker, like docker compose up or docker run/build etc...
 the docker context in this project use SSH to communicate with the other docker deamon, to implement it we needed to use ssh-agent in order to save the SSH key and let docker context communicate securely.
+
+
+
+## HELM Project
+
+
+### Overview:
+Helm project let you deploy one pod (depend on your replicas, you can config it in values if you want to), with two containers in it.
+in order to deploy it you need to read the README of ingress-nginx.
+that project using ingress controller nginx to give access into the sidecar pod.
+you can deploy it on your minikube or on eks cluster, your choose.
+
+* sidecar pod: the sidecar container in that project is a basic python flask, not for production, if you want to deploy it in production use gunicorn or other wsgi that supports flask, make sure you expose the right ports as the service try to access. 
+  the role of it is to verify that the application up succesfully.
+  you need to config the host value in values.yaml to your prefared host, if you using Route53 there is a little explain in the ingress nginx readme.
+  the sidercar container has liveness and readiness engines.
+  - k8s liveness verify that the container up succesfully in route "/health", if the container restarts without stopping, it might because the liveness don't get response 200, because the web didn't up succesfully, it's not because of the java application, the problem with that container directly.
+  - k8s readiness verify that the backend (in our case, "/" path) not response 200, and that might be because problem directly in the java app.
+  - in route "/" in your ingress you can see the message of java app.
+
+the containers (sidecar and java app) sharing volume in pod spec definition (deployment.yaml), the javaapp, up, and if the run success, it throw the output to the shared volume, and from the shared volume the sidecar pulls the data, just when that's success the readiness work and the ingress will send the traffic into the sidecar service, therfore if you can't see the web in ingress, it might because of it, try to get in sidecar container and verify that the txt file in that place (/usr/share/output.txt).
+
+all the wrote above, assume that you are using the default values that comes with the project, and follow the guide to install it.
+
+
+
+
+### requirements before you create helm release:
+1. go to 
+```
+└── sidecar
+    ├── Dockerfile
+    ├── hello.py
+    └── requirements.txt
+```
+and create docker image using that docker file, thats your sidecar from now, i'll talk about it later.
+
+2. go to
+```
+.
+├── Dockerfile
+```
+and create the java image
+
+
+give thats artifacts name and upload it to your repository, after that update the values.yaml with images name.
+java app in: java.javaapp.image.name (update also the tag that you chose).
+sidecar in: java.sidecar.image.name (update also the tag that you chose).
+
+
+
+
+
+### install helm release:
+
+all the wrote bellow, based on the default values in values.yaml, if you use other values, change it also there.
+let's start!!
+
+
+
+1. create minikube or eks cluster then using the following commands:
+
+2. choose node you want to deploy on it.
+kubectl get nodes
+
+3. label it, so the nodeSelector will choose it.
+kubectl label node <YOUR-NODE-NAME> environment=java
+
+4. taint your node, that's how you verify that's just this deployment will be on it, without any other parasites pods.
+kubectl taint node <YOUR-NODE-NAME> env=java:NoExecute
+
+5. create secrets.yaml with your docker credentials and put it in ./helm/templates/
+run this command to extract your docker credentials and copy the output:
+cat ~/.docker/config.json | base64
+
+use this template:
+```
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .Values.java.imagePullSecrets }}
+  namespace: {{ .Values.java.namespace }}
+data:
+  .dockerconfigjson: |
+   <BASE 64 encoded docker credentials here>
+type: kubernetes.io/dockerconfigjson
+```
+
+if you are using git, make sure the name of secret.yaml in your .gitignore, to make sure you don't upload it by mistake, if you cloned my project, it's already there.
+
+6. go to ./ingress-nginx/README.md and follow this guide
+
+7. go to ./helm and write the following command to create helm release
+
+8. wait few seconds then check your ingress host url, congrats!!!!
+
+
+### Deployment Strategy:
+this deployment using rolling update strategy, what means that when you upgrade the helm release, k8s will up and down pods gradually.
+you can define the maxsurge and maxunavailable in values.yaml.
+maxsurge means the amount of pods that you allow k8s upload more than the replicas you defined while the rolling update.
+maxunavailable means the amount of pods that are replaced in the rolling update that you allow k8s to kill at any given time.
+
+### Folder Tree Reference:
+
+```
+.
+├── helm
+│   ├── Chart.yaml
+│   ├── templates
+│   │   ├── deployment.yaml
+│   │   ├── ingress.yaml
+│   │   ├── namespace.yaml
+│   │   ├── NOTES.txt
+│   │   ├── secrets.yaml
+│   │   └── service.yaml
+│   └── values.yaml
+├── ingress-nginx
+│   ├── README.md
+│   └── terraform
+│       ├── main.tf
+│       └── provider.tf
+└── sidecar
+    ├── Dockerfile
+    ├── hello.py
+    └── requirements.txt
+
+```
