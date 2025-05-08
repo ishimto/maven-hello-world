@@ -183,7 +183,7 @@ jobs:
         sleep 15
         echo "DEPLOY_STATUS=$(docker inspect --format='{{json .State.Health}}' ${CONTAINER_NAME} | jq | grep unhealthy)" >> $GITHUB_ENV
     
-    - name: Rollback
+    - name: Rollback to stable
       run: |
         if [[ -z ${DEPLOY_STATUS} ]]; then
             echo "deploy success, delete old cache, save the cache in use for next build"
