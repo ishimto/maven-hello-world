@@ -70,7 +70,32 @@ In this project the chosen branching strategy was costum branching strategy some
 but wait. if stage and features do the same what the purpose of it??
 in features we push to the registry each build with commit hash, but not change the version that way we can follow versions and also to test (Part of the CI) before we merge into stage environment.
 
-if stage environment we update in the end the version in pom.xml (we'll talk about it later), and patch version (we'll talk about sementic version later), in the end if it pass the all stages, and when we PR into master, it deploy that version.
+in the stage environment we update in the end the version in pom.xml (we'll talk about it later), and increment the patch version (we'll talk about sementic version later), in the end if it pass the all stages, and when we PR into master, it deploy that version.
 
+
+
+## Github Actions
+There are a lot of tools for CI/CD like jenkins, gitlab-ci etc.. each one has it's own benefits.
+in our project we use the most prefared tool to integrate with github --> Github Actions, but why?
+
+### Keywords
+* Workflow
+* Triggers
+* Jobs
+* Steps
+* Actions
+
+### Overview
+Github Actions CI/CD file calls Workflow, in compare to jenkins --> Jenkinsfile.
+in the workflow you define few things:
+* triggers - to start the CI/CD process like push,pr and more, it's very flexible.
+* jobs - each job run on new runner, in the end of the job Github will clean the runner and you will get a new one next time.
+* steps - this is the actually CI/CD process, thats how you define the "steps" of it and what will happen.
+* Actions - Github Actions has a lot of.. well.. actions. but wait, what is it?
+Actions are individual tasks that you can combine to customize the workflow, you can create your own or use others by shared actions by github community.
+the action saved in repository as action.yaml the first part of action name is the organization name and the second is the repo name, then the tag.
+i.e: actions/checkout@v4, you can find it in "actions" organization in checkout repo with version tag 4.
+this actions simplifies the CI/CD process, i.e, instead of doing git clone ... you can use actions/checkout@v4 to checkout your code in short block,
+and there are a lot of actions that can be usefully. in compare to jenkins --> Plugins.
 
 
