@@ -105,7 +105,7 @@ and there are a lot of actions that can be usefully. in compare to jenkins --> P
 Regardless the code you write, it's better to version it so you can know rollback in case it needed or manage few versions if it needed, it also good for docs.
 There are a lot of versioning methods, in our project we used sementic version, that build from 3 numbers splitted with ".", like "1.0.0" or "4.2.3" etc..
 but WAIT!!!!! i wrote 1.0.0 then 4.2.3, what each number mean?
-so.. it's splitted by that methods:   Major.Minor.Patch
+so.. it's splitted by that method:   Major.Minor.Patch
 * Major version incremented when there are breaked changes the existing api.
 * Minor version incremented when there are changes but not breaked one, like adding more features.
 * Patch version incremented when there are bug fixes and non functionallity changed.
@@ -116,4 +116,82 @@ if you want to change so it can increment the Major and Minor there is a Action 
 the action name is: nnichols/maven-version-bump-action@v3, it works with commit, searches for #patch #minor #major and increment the chosen one.
 
 
+
+## Maven
+Build automation tool, and project management tool for java projects.
+pom.xml file is the basement of maven, declare data on the project, it should be in the root of the java project, before src/ and test/.
+if you create your folder tree like the below tree, maven will know where to look for each thing and you don't need to define anything manually.
+
+```
+├── myapp
+│   ├── pom.xml
+│   └── src
+│       ├── main
+│       │   └── java
+│       │       └── com
+│       │           └── myapp
+│       │               └── App.java
+│       └── test
+│           └── java
+│               └── com
+│                   └── myapp
+│                       └── AppTest.java
+```
+
+### WHY WE NEED IT??
+as mentiond above, maven is a build automation tool and project management for java project, but what does it mean??
+before maven, we needed to:
+* manage dependencies - install the JAR (libraries) of third party, save them in folder in out project, and if one library needs other we needed to understand it by ourself, and install the other depend library.
+* build - before maven we needed to build scripts to build our project includes the following steps:
+  clean, compile, test, package, install and deploy (sometimes also verify and validate as tests).
+maven solves it with concept that calls LifeCycles and there are 3 types of lifecycles - default, clean, site.
+
+### pom.xml
+file xml that contains:
+* metadata of the project - like version, artifact name (ID) etc..
+* dependencies - maven will install it automaticlly, includes them nested dependencies (automation!!!)
+* build process with plugins for each phase and them goals that will used includes versions
+* repositories - where maven can install dependencies or plugins if needed (extended places and not just the default - maven central)
+* distribution - tells maven where to publish the artifact like the JAR file, the credentials for destination saved in settings.xml in m2/.. local repository.
+* properties - general variables that can be used over the pom file
+etc..
+
+
+### Plugins && Goals
+plugins are the tools that actually runs the phases in the lifecycle, without them maven not have a real value.
+each step in the lifecycle don't really know how to do things, it just "trigger" that run goal from plugin.
+so what goal mean?
+each plugin has goals, and each goals do specific action in the plugin.
+lets take the plugin maven-compiler-plugin, thats the plugin that compiles the source code, you can use it: mvn maven-compiler-plugin:compile
+
+maven has default plugins that it will run when you doing mvn <phase>, if you didn't specify in the pom.xml.
+if you want to specify a specific version of plugin or running a specific plugin, you'll need to adding it into pom.xml
+the order in pom.xml not say anything, maven still doing it by the order of lifecycle, unless you specify the phase in the plugin execution.
+
+
+### Life Cycles
+so.. what does it mean lifecycle?
+life cycle are steps or "phases" that maven over on them in specific order.
+
+* default:
+that life cycle manage the build process, includes 7 phases, when you run phase it will run the all phases before until it and not just it, and i'll explain it with the phases.
+1. validate - checks the basic requirements of the project like that there is a valid pom.xml.
+2. compile - compile the java source code from src/.. the input is .java output is .class, binary files, into target/ directory.
+3. test - run unitests tests from test/..
+4. package - package the artifacts from compile into JAR/WAR (Java/Web Archive) into target/ directory
+5. verify - run more tests if defined in the pom.xml with plugin (i'll explain it later)
+6. install - install the Artifact on local repository, if other projects will need that as dependency they can to use it throw the local repo.
+7. deploy - same as local but to remote repo, let collaborate with other developers or in order to manage versioning if needed.
+in order to let deploy work, who that try to use it need to define settings.xml and pom.xml the server credentials and permissions.
+
+ENDS OF DEFAULT LIFECYCLE, now after i explained about it, it will be easier to understand what i meant before when i wrote "when you run phase it will run the all phases before until it and not just it" in thge first LifeCycles unit.
+
+
+* clean:
+thats lifecycle important if you run maven in the same environment over and over again, you clean the target directory, and let you to compile next time into clean environment.
+
+* site:
+that lifecycle responsible of create documents for the porject, create static sites in html format with information about the project.
+the data for documents is taken from existing data like result of unitests if there are.
+the documents saved in target/site
 
