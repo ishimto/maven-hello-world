@@ -362,17 +362,30 @@ let's start!!
 1. create minikube or eks cluster then using the following commands:
 
 2. choose node you want to deploy on it.
+
+```
 kubectl get nodes
+```
+
 
 3. label it, so the nodeSelector will choose it.
+
+```
 kubectl label node <YOUR-NODE-NAME> environment=java
+```
 
 4. taint your node, that's how you make sure this deployment will be on it alone, without any other parasites pods.
+
+```
 kubectl taint node <YOUR-NODE-NAME> env=java:NoExecute
+```
 
 5. create secrets.yaml with your docker credentials and put it in ./helm/templates/
 run this command to extract your docker credentials and copy the output:
+
+```
 cat ~/.docker/config.json | base64
+```
 
 use this template:
 ```
