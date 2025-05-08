@@ -25,7 +25,6 @@ jobs:
 
     - name: Build image with cache
       run: |
-        docker buildx build 
         docker compose up --build -d
         sleep 15
         echo "STATUS=$(docker inspect --format='{{json .State.Health}}' ${CONTAINER_NAME} | jq | grep unhealthy)" >> $GITHUB_ENV
