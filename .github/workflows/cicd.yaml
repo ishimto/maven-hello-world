@@ -30,20 +30,12 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_TOKEN }}
     
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-
-    - name: Build with buildx for better caching
-      run: |
-        docker buildx build \
-        --cache-from=type=registry,ref=${DOCKER_IMAGE} \
-        --cache-to=type=registry,ref=${DOCKER_IMAGE},mode=max \
-        --tag ${DOCKER_IMAGE} \
-        .
+    #- name: Pull latest image for build cache
+    #  run: docker compose pull
 
     - name: Compose up
       run: |
-        docker compose up -d
+        docker compose up --build -d
         sleep 15
         echo "STATUS=$(docker inspect --format='{{json .State.Health}}' ${CONTAINER_NAME} | jq | grep unhealthy)" >> $GITHUB_ENV
 
