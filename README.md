@@ -2,7 +2,7 @@
 
 
 ## Overview
-Regardless of the software product that you will make, probably you often integration your local and remote code, you run tests, and in the end you probably going to deploy/deliver your product, etc.. that process play a big part of a Devops Life-Cycle.
+Regardless of the software product that you will make, probably you often integration your local and remote repository code, run tests, and in the end you probably going to deploy/deliver your product, etc.. that process play a big part of a Devops Life-Cycle.
 In that project you will understand deeply (hopefully) the CI/CD part's that might could help you in your own SDLC - Software Development Life-Cycle.
 
 
@@ -17,6 +17,7 @@ The following topics will be coverd in thats project:
 * K8s + Helm
 
 ### Folder Tree Reference:
+```
 .
 ├── compose.yaml
 ├── Dockerfile
@@ -52,7 +53,4 @@ The following topics will be coverd in thats project:
     ├── Dockerfile
     ├── hello.py
     └── requirements.txt
-
-
-
-
+```
