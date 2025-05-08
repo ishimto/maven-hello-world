@@ -93,7 +93,7 @@ in order to use this project, you'll need to define the following variables in s
 * EC2_USER - define with ec2-user, it's the default. if not then create secret for stage and prod, and change it in CI/CD where the HOST is for stage.
 
 ### HELM Project:
-Will be explained at the end of the readme.
+Will be explained at the end of that readme.
 
 
 ## Git Branching Strategy
@@ -135,7 +135,8 @@ in the workflow you define few things:
 * Actions - Github Actions has a lot of.. well.. actions. but wait, what is it?
 Actions are individual tasks that you can combine to customize the workflow, you can create your own or use others by shared actions by github community.
 the action saved in repository as action.yaml the first part of action name is the organization name and the second is the repo name, then the tag.
-i.e: actions/checkout@v4, you can find it in "actions" organization in checkout repo with version tag 4.
+i.e: 
+actions/checkout@v4, you can find it in "actions" organization in checkout repo with version tag 4.
 this actions simplifies the CI/CD process, i.e, instead of doing git clone ... you can use actions/checkout@v4 to checkout your code in short block,
 and there are a lot of actions that can be usefully. in compare to jenkins --> Plugins.
 
@@ -166,7 +167,13 @@ so.. it's splitted by that method:   Major.Minor.Patch
 ### Dive into the project:
 in that CI/CD we incremented just the Patch, and that's what the workflow will do if you merge to stage and it pass the tests succesfully.
 if you want to change so it can increment the Major and Minor there is a Action that created by the community (remember? we talked about it before..).
-the action name is: nnichols/maven-version-bump-action@v3, it works with commit, searches for #patch #minor #major and increment the chosen one.
+the action name is: 
+
+```
+nnichols/maven-version-bump-action@v3
+```
+
+it search in the commit: #patch #minor #major and increment the chosen one.
 
 
 
@@ -260,8 +267,12 @@ you can find the Dockerfile i mentioned, right here:
 ```
 
 ## Docker
-if you read about CI/CD i assume you already know what is it docker so i'll not digging in it too much.
+if you read about CI/CD i assume you already know what is it docker so i'll not digging in it too much, i dug too much anyway.
 in the project, docker used as a containerization tool for java application.
+
+```
+if you don't know what is it docker, i suggest you Google it, as wise man once told me.
+```
 
 ### Keywords:
 * dockerfile
@@ -381,12 +392,18 @@ if you are using git, make sure the name of secret.yaml in your .gitignore, to m
 6. go to ./ingress-nginx/README.md and follow this guide
 
 7. go to ./helm and write the following command to create helm release
+
+```
 helm install [your-release-name) .
+```
+
 8. wait few seconds then check your ingress host url, congrats!!!!
 
 if you change something in the manifest, run:
-helm upgrade [your-release-name) .
 
+```
+helm upgrade [your-release-name) .
+```
 
 ### Deployment Strategy:
 this deployment using rolling update strategy, what means that when you upgrade the helm release, k8s will up and down pods gradually.
