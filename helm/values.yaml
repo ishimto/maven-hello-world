@@ -6,15 +6,15 @@ java:
   javaapp:
     name: hello-java
     image:
-      name: "gingerous/javahello"
-      tag:  "1.0.31"
+      name: "<write your java image name here>"
+      tag:  "<write your java image tag here>"
     imagePullPolicy: Always
 
   sidecar:
     name: sidecar
     image:
-      name: "gingerous/hellopython"
-      tag: "latest"
+      name: "<write your side car image name here>"
+      tag: "<write your side car image tag here>"
     imagePullPolicy: Always
     containerPort: 8000
 
