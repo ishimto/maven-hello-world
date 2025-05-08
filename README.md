@@ -12,8 +12,7 @@ The following topics will be coverd in thats project:
 * GitHub Actions
 * Sementic Versioning
 * Maven
-* Docker Compose
-* Docker Context
+* Docker
 * K8s + Helm
 
 ### Folder Tree Reference:
@@ -201,5 +200,10 @@ now after i explained about it, it will be easier to understand what i meant bef
 that project based on java, therfore we need to compile test etc.. maven automate the build process in our project.
 out project using dockerfile to increment the patch using maven plugin, compile and package it and in the and run it in container on production environemt.
 you can find the Dockerfile i mentiond, right here:
+```
 .
 ├── Dockerfile
+```
+
+## Docker
+
