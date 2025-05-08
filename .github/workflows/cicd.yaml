@@ -92,7 +92,7 @@ jobs:
       continue-on-error: true
 
     - name: Pull latest image
-      run: docker pull ${DOCKER_IMAGE}
+      run: docker compose pull
 
     - name: Deploy EC2
       run: |
@@ -170,9 +170,6 @@ jobs:
     - name: Tag latest as rollback
       run: docker tag ${DOCKER_IMAGE}:stable ${DOCKER_IMAGE}:rollback
       continue-on-error: true
-
-    - name: Pull latest image
-      run: docker pull ${DOCKER_IMAGE}:${{ env.VERSION }}
 
     - name: Deploy EC2
       env:
