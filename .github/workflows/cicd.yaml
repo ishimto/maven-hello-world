@@ -17,7 +17,8 @@ env:
 jobs:
   stage:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/tests'
+    if: "!contains(github.event.head_commit.message, 'NORUN')"
+    #if: github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/tests'
     env:
       COMPOSE_VERSION: latest
     steps:
