@@ -4,25 +4,31 @@ Ingress NGINX
 ---
 
 # folder tree:
+
+
 ```
 .
 ├── README.md
 └── terraform
     ├── main.tf
     └── provider.tf
-    ```
+```
 
 # Minikube
 * install:
+
 ```
 minikube addons enable ingress
 ```
+
 run and save the output:
+
 ```
 minikube ip
 ```
 
 go to /etc/hosts and map the above output with your host like that:
+
 ```
 IP HOST
 ```
@@ -35,16 +41,20 @@ that's way the dns resolver know where to go (to the ingress) when you try reach
 ./terraform
 
 - initialize terraform:
+
 ```
 terraform init 
 ```
 
 - plan:
 plan your steps:
+
 ```
 terraform plan
 ```
+
 - create nginx ingress controller:
+
 ```
 terraform apply
 ```
@@ -59,7 +69,9 @@ when you create public hosted zone, create A record with alias into your classic
 ### Without Route53
 copy the loadbalancer ip
 go to /etc/hosts and map the above output with your host like that:
+
 ```
 IP HOST
 ```
+
 (you'll need to maintain it because it replaced automaticlly sometimes)
