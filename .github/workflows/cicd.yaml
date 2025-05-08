@@ -30,8 +30,8 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_TOKEN }}
     
-    #- name: Pull latest image for build cache
-    #  run: docker compose pull
+    - name: Pull latest image for build cache
+      run: docker compose pull
 
     - name: Compose up
       run: |
