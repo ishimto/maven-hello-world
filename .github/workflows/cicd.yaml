@@ -34,13 +34,14 @@ jobs:
         
         if [[ -z ${STATUS} ]]; then
             echo "success, extract artifact"
-            echo "VERSION=$(mvn -f myapp/pom.xml help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
             docker cp ${CONTAINER_NAME}:/home/nonroot/pom.xml ./myapp/pom.xml
-            docker cp ${CONTAINER_NAME}:/home/nonroot/myapp-${{ env.VERSION }}.jar .
+            echo "VERSION=$(mvn -f myapp/pom.xml help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
+            docker cp ${CONTAINER_NAME}:/home/nonroot/myapp-${{ VERSION }}.jar .
         else
             echo "container isn't healthy"
             exit 1
         fi
+      
 
     - name: GitHub artifact
       uses: actions/upload-artifact@v4
