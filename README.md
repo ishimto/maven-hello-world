@@ -324,7 +324,7 @@ all the wrote above, assume that you are using the default values that comes wit
     └── requirements.txt
 ```
 and create docker image using that docker file, thats your sidecar from now, i'll talk about it later.
-
+the sidecar created with multi stage, in the first stage the requirements download and in the second stage it run the python so it will use cache for incremental build.
 2. go to
 ```
 .
