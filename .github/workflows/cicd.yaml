@@ -31,12 +31,17 @@ jobs:
         password: ${{ secrets.DOCKER_TOKEN }}
     
 
-    - name: Pull latest image for build cache
-      run: docker compose pull
+    - name: Build with buildx for better caching
+      run: |
+        docker buildx build \
+        --cache-from=type=registry,ref=${DOCKER_IMAGE} \
+        --cache-to=type=registry,ref=${DOCKER_IMAGE},mode=max \
+        --tag ${DOCKER_IMAGE} \
+        .
 
     - name: Build image
       run: |
-        docker compose up --build -d
+        docker compose up -d
         sleep 15
         echo "STATUS=$(docker inspect --format='{{json .State.Health}}' ${CONTAINER_NAME} | jq | grep unhealthy)" >> $GITHUB_ENV
 
