@@ -3,8 +3,7 @@
 
 ## Overview
 Regardless of the software product that you will make, probably you often integration your local and remote repository code, run tests, and in the end you probably going to deploy/deliver your product, etc.. that process play a big part of a Devops Life-Cycle.
-In that project you will understand deeply (hopefully) the CI/CD part's that might could help you in your own SDLC - Software Development Life-Cycle.
-
+In that project you will understand deeply (hopefully) the CI/CD concept and his components, that might could help you in your own SDLC - Software Development Life-Cycle
 
 
 
@@ -150,6 +149,8 @@ job used to run in stage branch, build and check, and also update the version bo
 2nd:
 job used to run when pull requests merged into the master branch, after review and from stage branch what means it deployed succesfully on environment same as the production, it's not build, just deploy, if it failed, it's rollback to the last stable version, if it success, it's update tag the image with stable, now the image have 2 tags, version and stable.
 
+in the end of the job on our environment we clean dangling artifacts/tags, the reason filter using, is to save the current build tag.
+if you already did ci/cd pipeline over jenkins you might noticed that we don't have here clean in the runner, that because github doing it for us and clean every thing in "post" after every thing done, no matter if success or fail, always!, and when we will start the workflow next time, we will get a clean runner for our job, that's why we don't need to start with clean.
 
 the reason in that's project the workflow splitted into 2 jobs and not one, to make it easy to maintain each environment and don't make mix with a lot of "if" statements.
 
@@ -269,10 +270,6 @@ you can find the Dockerfile i mentioned, right here:
 ## Docker
 if you read about CI/CD i assume you already know what is it docker so i'll not digging in it too much, i dug too much anyway.
 in the project, docker used as a containerization tool for java application.
-
-```
-if you don't know what is it docker, i suggest you Google it, as wise man once told me.
-```
 
 ### Keywords:
 * dockerfile
