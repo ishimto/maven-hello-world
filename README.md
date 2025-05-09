@@ -3,8 +3,7 @@
 
 ## Overview
 Regardless of the software product that you will make, probably you often integration your local and remote repository code, run tests, and in the end you probably going to deploy/deliver your product, etc.. that process play a big part of a Devops Life-Cycle.
-In that project you will understand deeply (hopefully) the CI/CD concept and his components, that might could help you in your own SDLC - Software Development Life-Cycle
-
+In that project you will understand deeply (hopefully) the CI/CD concept and his components, what would helps to make sure that the SDLC - Software Development Life-Cycle process will be in the highest efficiency
 
 
 ## Key Topics
@@ -255,7 +254,7 @@ the documents saved in target/site
 
 
 now after i explained about it, it will be easier to understand what i meant before when i wrote "when you run phase it will run the all phases before until it and not just it" in thge first LifeCycles unit.
-
+(unless you specify the plugin and goals, as used in Dockerfile in order to do it multi-stage based)
 
 
 ### Dive into the project:
