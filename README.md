@@ -261,6 +261,9 @@ now after i explained about it, it will be easier to understand what i meant bef
 ### Dive into the project:
 that project based on java, therfore we need to compile test etc.. maven automate the build process in our project.
 out project using dockerfile to increment the patch using maven plugin, compile and package it and in the and run it in container on production environemt.
+the Dockerfile using multi-stage method to make sure the build will be incremental.
+instead of running maven package, what will run automate the all default lifecycle i mentioned above, the dockerfile run it step by step or in maven language, goal after goal, first install dependencies, then tests, etc.. if one layer changed, that's way we can use wisely our cache.
+
 you can find the Dockerfile i mentioned, right here:
 ```
 .
@@ -268,7 +271,7 @@ you can find the Dockerfile i mentioned, right here:
 ```
 
 ## Docker
-if you read about CI/CD i assume you already know what is it docker so i'll not digging in it too much, i dug too much anyway.
+if you read about CI/CD and get until here, i assume you already know what is it docker so i'll not digging in it too much, i dug too much anyway.
 in the project, docker used as a containerization tool for java application.
 
 ### Keywords:
