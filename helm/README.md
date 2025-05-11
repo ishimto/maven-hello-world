@@ -19,6 +19,7 @@ This directory includes helm templates for a Java application includes some exte
 Before deploying the Helm chart, ensure the following:
 
 ### Docker images
+
 * Build and push the Java application Docker image via [Dockerfile](https://github.com/ishimto/maven-hello-world/blob/master/Dockerfile) or use the [CI/CD](https://github.com/ishimto/maven-hello-world/blob/master/README.md).
 * Build and push the Sidecar Docker image via [Dockerfile](https://github.com/ishimto/maven-hello-world/blob/master/helm/sidecar/Dockerfile).
 
@@ -38,6 +39,7 @@ Minikube:  [Ingress-NGINX Installation Guide](https://kubernetes.io/docs/tasks/a
 
 
 1. Select a Node for Deployment
+
 Identify the node where you want to deploy the application:
 
 ```
@@ -46,6 +48,7 @@ kubectl get nodes
 
 
 2. Label the Node
+
 Assign a label to the chosen node to target it for deployment:
 
 ```
@@ -53,6 +56,7 @@ kubectl label node <YOUR-NODE-NAME> environment=java
 ```
 
 4. Taint the Node
+
 Taint the node to ensure exclusive deployment, preventing other pods from being scheduled on it:
 
 ```
@@ -60,6 +64,7 @@ kubectl taint node <YOUR-NODE-NAME> env=java:NoExecute
 ```
 
 5. Create Docker Registry Secret
+
 Generate a Kubernetes secret containing your Docker registry credentials:
 
 ```
@@ -89,10 +94,12 @@ helm install [your-release-name] .
 ```
 
 7. Verify Deployment
+
 After a few moments, verify that the application is accessible via the configured Ingress host URL.
 
 
 8. Upgrade the Release (If Needed)
+
 If you make changes to the Helm chart or configuration, upgrade the release:
 
 ```
