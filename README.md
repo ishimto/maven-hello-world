@@ -34,9 +34,9 @@ Commits containing the message: NORUN, will skip the workflow execution (If you 
 The following environment variables and secrets are required:
 
 ### Environment Variables (Defined in the workflow)
-DOCKER_IMAGE – Full path to the Docker image repository.
+* DOCKER_IMAGE – Full path to the Docker image repository.
 
-CONTAINER_NAME – Docker container name used during testing and deployment.
+* CONTAINER_NAME – Docker container name used during testing and deployment.
 
 ### GitHub Secrets Required
 * DOCKER_USERNAME – Docker Hub username.
