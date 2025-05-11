@@ -40,25 +40,11 @@ that's way the dns resolver know where to go (to the ingress) when you try reach
 * Install:
 ./terraform
 
-- initialize terraform:
+Copy thats code to your main eks terraform, and make them depend each other, the ingress-nginx should be depend on the VPC, thats way when you will destroy the eks, it will destroy also the load balancer resource, otherwise, your eks destroy will get in loop when you try to destroy it, and you'll need connect to the console and remove it manually.
 
-```
-terraform init 
-```
 
-- plan:
-plan your steps:
 
-```
-terraform plan
-```
-
-- create nginx ingress controller:
-
-```
-terraform apply
-```
-
+## DNS Record for host-based ingress
 
 2 options:
 ### Route53
