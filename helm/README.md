@@ -19,8 +19,8 @@ This directory includes helm templates for a Java application includes some exte
 Before deploying the Helm chart, ensure the following:
 
 ### Docker images
-* Build and push the Java application [Docker image](https://github.com/ishimto/maven-hello-world/blob/master/Dockerfile) or use the [CI/CD](https://github.com/ishimto/maven-hello-world/blob/master/README.md).
-* Build and push the Sidecar [Docker image](https://github.com/ishimto/maven-hello-world/blob/master/sidecar/Dockerfile).
+* Build and push the Java application Docker image via [Dockerfile](https://github.com/ishimto/maven-hello-world/blob/master/Dockerfile) or use the [CI/CD](https://github.com/ishimto/maven-hello-world/blob/master/README.md).
+* Build and push the Sidecar Docker image via [Dockerfile](https://github.com/ishimto/maven-hello-world/blob/master/sidecar/Dockerfile).
 
 
 ### values.yaml
