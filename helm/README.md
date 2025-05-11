@@ -28,7 +28,9 @@ Set the image names and tags for both the Java application and Sidecar container
 
 
 ### Ingress-NGINX Controller
+
 Install the NGINX Ingress Controller in your Kubernetes cluster. Refer to the [Ingress-NGINX Installation Guide](https://artifacthub.io/packages/helm/ingress-nginx/ingress-nginx)
+
 Minikube:  [Ingress-NGINX Installation Guide](https://kubernetes.io/docs/tasks/access-application-cluster/ingress-minikube/)
 
 
