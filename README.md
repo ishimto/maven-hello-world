@@ -28,6 +28,8 @@ The workflow is triggered on push events to the following branches:
 * master
 * stage
 * Any branch prefixed with test
+
+
 Commits containing the message: NORUN, will skip the workflow execution (If you want to not run and have a special documented commit that you can bold it for later and go back to, otherwise use the default github actions options like skip ci).
 
 ## Environment Variables & Secrets
