@@ -39,14 +39,14 @@ DOCKER_IMAGE – Full path to the Docker image repository.
 CONTAINER_NAME – Docker container name used during testing and deployment.
 
 ### GitHub Secrets Required
-DOCKER_USERNAME – Docker Hub username.
-DOCKER_TOKEN – Docker Hub access token.
-DOCKER_REPO – Docker repository name (e.g., username/repo).
-EC2_USER – SSH user for EC2 access.
-EC2_STAGE_KEY – SSH private key for stage server.
-EC2_STAGE_HOST – IP address of the stage EC2 server.
-EC2_PROD_KEY – SSH private key for production server.
-EC2_PROD_HOST – IP address of the production EC2 server.
+* DOCKER_USERNAME – Docker Hub username.
+* DOCKER_TOKEN – Docker Hub access token.
+* DOCKER_REPO – Docker repository name (e.g., username/repo).
+* EC2_USER – SSH user for EC2 access.
+* EC2_STAGE_KEY – SSH private key for stage server.
+* EC2_STAGE_HOST – IP address of the stage EC2 server.
+* EC2_PROD_KEY – SSH private key for production server.
+* EC2_PROD_HOST – IP address of the production EC2 server.
 
 ## Artifacts and Docker Tags
 
