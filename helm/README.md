@@ -97,7 +97,7 @@ If you make changes to the Helm chart or configuration, upgrade the release:
 helm upgrade [your-release-name] .
 ```
 
-### Deployment Strategy:
+## Deployment Strategy:
 This deployment using the RollingUpdate strategy to ensure zero downtime during updates.
 You can configure the following parameters in values.yaml: 
 * maxSurge: Specifies the maximum number of pods that can be created above the desired number of pods during an update.
